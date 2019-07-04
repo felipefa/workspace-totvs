@@ -6,45 +6,8 @@ function abrirModalImprimir() {
 			type: 'danger'
 		});
 	} else {
-		const filtrosPreenchidos = [];
-		const atividade = $('#atividade').val();
-		const noPrazo = $('#noPrazo').val();
-		const demanda = $('#demanda').val();
-		const antecipacao = $('#antecipacao')[0].checked;
-		const naPorta = $('#naPorta')[0].checked;
-		const emAndamento = $('#emAndamento')[0].checked;
-		const contabil = $('#contabil')[0].checked;
-		const fornecedor = $('#fornecedor').val();
-		const responsavel = $('#responsavel').val();
-
-		// Cria as constraints de acordo com os valores
-		if (atividade != '') {
-			filtrosPreenchidos.push('<option value="atividade">Atividade</option>');
-		}
-		if (noPrazo != '') {
-			filtrosPreenchidos.push('<option value="noPrazo">No Prazo</option>');
-		}
-		if (demanda != '') {
-			filtrosPreenchidos.push('<option value="demanda">Tipo de Demanda</option>');
-		}
-		if (antecipacao || naPorta) {
-			filtrosPreenchidos.push('<option value="tipoSolicitacao">Tipo de Solicitação</option>');
-		}
-		if (emAndamento || contabil) {
-			filtrosPreenchidos.push('<option value="status">Status</option>');
-		}
-		if (fornecedor != '') {
-			filtrosPreenchidos.push('<option value="fornecedor">Fornecedor</option>');
-		}
-		if (responsavel != '') {
-			filtrosPreenchidos.push('<option value="responsavel">Responsável</option>');
-		}
-
-		const dados = {
-			'filtrosPreenchidos': filtrosPreenchidos
-		};
 		const html = $('.modalImprimir').html();
-		const template = Mustache.render(html, dados);
+		const template = Mustache.render(html, null);
 
 		FLUIGC.modal({
 			title: 'Imprimir',
@@ -77,15 +40,8 @@ function abrirModalImprimir() {
 		});
 
 		$('#ordenarPorFiltro').on('change', function () {
-			if ($(this).val() == 'Sim') {
-				if (filtrosPreenchidos.length > 0)
-					$('#campoFiltroOrdenacao').show();
-				else
-					FLUIGC.toast({
-						title: 'Atenção!',
-						message: 'Nenhum filtro utilizado.',
-						type: 'warning'
-					});
+			if ($(this).val() === 'Sim') {
+				$('#campoFiltroOrdenacao').show();
 			} else {
 				$('#filtroOrdenacao').val('');
 				$('#campoFiltroOrdenacao').hide();
@@ -150,7 +106,7 @@ function criarTabelaTipoFiltro(nome, valor) {
 }
 
 function criarTabelaResultados(dados) {
-	const headerTotais = criarArrayTitulosResultados(['\nID', '\nSolicitação', '\nDemanda', '\nData Início', '\nResponsável', '\nFornecedor', '\nAtividade', 'No Prazo', 'Em Andamento', 'Data Conclusão', '\nContábil']);
+	const headerTotais = criarArrayTitulosResultados(['\nID', 'Tipo de Solicitação', 'Tipo de Demanda', '\nData Início', '\nResponsável', '\nFornecedor', '\nAtividade', 'No Prazo', 'Em Andamento', 'Data Conclusão', '\nContábil']);
 	const tabela = {
 		layout: {
 			// lightHorizontalLines:
@@ -174,7 +130,7 @@ function criarTabelaResultados(dados) {
 			fillColor: (i) => {
 				if (i === 0)
 					return '#000';
-				return (i % 2 === 0) ? '#DDD' : null;
+				return (i % 2 === 0) ? null : '#DDD';
 			}
 		},
 		margin: [0, 5, 0, 0],
@@ -218,7 +174,7 @@ function criarPdf(chaveFiltro = null, nomeFiltro = null) {
 	const contabil = $('#contabil')[0].checked;
 	const fornecedores = $('#fornecedor').val();
 	const responsaveis = $('#responsavel').val();
-	const dados = dadosDatasetXML;
+	const dados = [...dadosDatasetXML];
 	const filtros = [
 		[],
 		[]
@@ -243,13 +199,14 @@ function criarPdf(chaveFiltro = null, nomeFiltro = null) {
 		organizarPorFiltro = {};
 		organizarPorFiltro['chave'] = chaveFiltro;
 		organizarPorFiltro['nome'] = nomeFiltro;
-		if (chaveFiltro != 'status' && chaveFiltro != 'tipoSolicitacao') {
-			organizarPorFiltro['valores'] = $('#' + chaveFiltro).val().split(',');
-		} else if (chaveFiltro == 'status') {
-			organizarPorFiltro['valores'] = status;
-		} else if (chaveFiltro == 'tipoSolicitacao') {
-			organizarPorFiltro['valores'] = tiposSolicitacao;
-		}
+		organizarPorFiltro['valores'] = getValoresAgrupamento(chaveFiltro);
+		// if (chaveFiltro != 'status' && chaveFiltro != 'tipoSolicitacao') {
+		// 	organizarPorFiltro['valores'] = $('#' + chaveFiltro).val().split(',');
+		// } else if (chaveFiltro == 'status') {
+		// 	organizarPorFiltro['valores'] = status;
+		// } else if (chaveFiltro == 'tipoSolicitacao') {
+		// 	organizarPorFiltro['valores'] = tiposSolicitacao;
+		// }
 	}
 
 	if (!isEmpty(atividades)) {
@@ -434,6 +391,20 @@ function criarPdf(chaveFiltro = null, nomeFiltro = null) {
 	return pdf;
 }
 
+function getValoresAgrupamento(chave) {
+	const resultado = [];
+
+	dadosDatasetXML.forEach(dado => {
+		let valor = dado[chave];
+		if (chave.indexOf('data') !== -1 && valor !== 'Em Andamento')
+			valor = valor.split(' ')[0];
+		if (!resultado.includes(valor))
+			resultado.push(valor);
+	});
+
+	return resultado;
+}
+
 /**
  * Função para verificar se a string é nula | vazia | indefinida
  * 
@@ -469,6 +440,8 @@ function organizarDados(chave, valor, dados) {
 			}
 		} else if (chave === 'demanda') {
 			if (dado['tipoDemanda'].indexOf(valor) != -1) resultado.push(dado);
+		} else if (chave.indexOf('data') !== -1) {
+			if (dado[chave].indexOf(valor) !== -1) resultado.push(dado);
 		} else {
 			if (dado[chave] === valor) resultado.push(dado);
 		}

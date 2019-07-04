@@ -265,7 +265,16 @@
 			<label for="filtroOrdenacao">Filtro Agrupador</label>
 			<select class="form-control" name="filtroOrdenacao" id="filtroOrdenacao">
 				<option value="" selected disabled>Selecione</option>
-				{{{filtrosPreenchidos}}}
+				<option value="atividade">Atividade</option>
+				<option value="contabil">Contábil</option>
+				<option value="dataConclusao">Data Conclusão</option>
+				<option value="dataInicio">Data Início</option>
+				<option value="emAndamento">Em Andamento</option>
+				<option value="fornecedor">Fornecedor</option>
+				<option value="noPrazo">No Prazo</option>
+				<option value="responsavel">Responsável</option>
+				<option value="tipoDemanda">Tipo de Demanda</option>
+				<option value="tipoSolicitacao">Tipo de Solicitação</option>
 			</select>
 		</div>
 	</div>
