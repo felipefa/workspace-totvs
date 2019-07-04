@@ -89,7 +89,7 @@ function createDataset(fields, constraints, sortFields) {
 				var solicitacao = dsWP.getValue(wp, 'workflowProcessPK.processInstanceId');
 				var tipoSolicitacao = '';
 				var tipoDemanda = '';
-				var dataInicio = dtcWP + ' as ' + dtdWP.substr(0, dtdWP.indexOf('.'));
+				var dataInicio = dtcWP + ' às ' + dtdWP.substr(0, dtdWP.indexOf('.'));
 				var responsavel = '';
 				var fornecedor = '';
 				var prazo = '';
@@ -136,7 +136,7 @@ function createDataset(fields, constraints, sortFields) {
 							continue;
 					}
 
-					dataConclusao = dtc + ' as ' + dtd.substr(0, dtd.indexOf('.'));
+					dataConclusao = dtc + ' às ' + dtd.substr(0, dtd.indexOf('.'));
 				}
 
 				if (emAndamentoConstraint && emAndamentoConstraint != atendimento)
@@ -332,7 +332,7 @@ function validaAtividade(stateSequence) {
 		case '56':
 			return 'Analisar Solução da Demanda Contábil';
 		case '43':
-			return 'Atender a Demanda Contabil';
+			return 'Atender a Demanda Contábil';
 		case '15':
 			return 'Atender a Demanda Comercial';
 		case '17':

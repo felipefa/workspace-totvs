@@ -203,11 +203,11 @@ function loadTable() {
 		header: [{
 				'title': 'ID'
 			}, {
-				'title': 'Solicitação'
+				'title': 'Tipo de Solicitação'
 			}, {
 				'title': 'Tipo de Demanda'
 			},{
-				'title': 'Início'
+				'title': 'Data Início'
 			}, {
 				'title': 'Responsável'
 			},{
@@ -217,9 +217,9 @@ function loadTable() {
 			}, {
 				'title': 'No Prazo'
 			}, {
-				'title': 'Andamento'
+				'title': 'Em Andamento'
 			}, {
-				'title': 'Conclusão'
+				'title': 'Data Conclusão'
 			}, {
 				'title': 'Contábil'
 			}
