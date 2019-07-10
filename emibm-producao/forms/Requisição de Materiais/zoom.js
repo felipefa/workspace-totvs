@@ -2,11 +2,11 @@ const setSelectedZoomItem = (selectedItem) => {
 	const id = selectedItem.inputId;
 
 	if (id === 'centroCusto') {
-		document.getElementById('codCentroCusto').value //= 'CODIGO DO CENTRO DE CUSTO';
+		document.getElementById('codCentroCusto').value = selectedItem.codigo;
 	} else if (id.indexOf('item') === 0) {
 		const numLinha = id.split('___')[1];
-		document.getElementById('codItem___'+numLinha).value //= 'CODIGO DO ITEM';
-		document.getElementById('unMedida___'+numLinha).value //= 'UNIDADE DE MEDIDA DO ITEM';
+		document.getElementById('codItem___'+numLinha).value = selectedItem.codigo;
+		document.getElementById('unMedida___'+numLinha).value = selectedItem.unMedida;
 	}
 }
 

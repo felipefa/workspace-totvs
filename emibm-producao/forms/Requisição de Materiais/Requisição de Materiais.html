@@ -6,6 +6,7 @@
 	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
 	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
 	<script type="text/javascript" src="scripts.js" charset="utf-8"></script>
 	<script type="text/javascript" src="zoom.js" charset="utf-8"></script>
 </head>
@@ -74,12 +75,12 @@
 								<div class="form-group col-md-5">
 									<label>Centro de Custo</label>
 									<input type="zoom" class="form-control" id="centroCusto" name="centroCusto" data-zoom="{
-										'displayKey':'DESC',
-										'datasetId':'dsCentroCusto',
+										'displayKey':'descricao',
+										'datasetId':'dsWsCentroCusto',
 										'placeholder': 'Selecione o centro de custo',
 										'fields':[
-											{'field':'COD', 'label':'Código'},
-											{'field':'DESC', 'label':'Descrição'}
+											{'field':'codigo', 'label':'Código'},
+											{'field':'descricao', 'label':'Descrição'}
 										]}">
 								</div>
 							</div>
@@ -117,26 +118,34 @@
 									</thead>
 									<tbody>
 										<tr>
-											<td>
-												<input type="hidden" name="codItem" id="codItem">
-												<div class="form-group col-md-8">
-													<label>Item</label>
-													<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
-														'displayKey':'DESC',
-														'datasetId':'dsProdutos',
-														'placeholder': 'Selecione um produto',
-														'fields':[
-															{'field':'COD', 'label':'Código'},
-															{'field':'DESC', 'label':'Descrição'}
-														]}">
-												</div>
-												<div class="form-group col-md-2">
-													<label>Unidade de Medida</label>
-													<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
-												</div>
-												<div class="form-group col-md-2">
-													<label>Quantidade</label>
-													<input type="number" class="form-control" name="quantidade" id="quantidade" placeholder="Informe a quantidade">
+											<td class="fs-v-align-middle">
+												<div class="row">
+													<input type="hidden" name="codItem" id="codItem">
+													<div class="form-group col-xs-12 col-md-8">
+														<label>Item</label>
+														<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
+															'displayKey':'descricao',
+															'datasetId':'dsWsProduto',
+															'placeholder': 'Selecione um produto',
+															'fields':[
+																{'field':'codigo', 'label':'Código'},
+																{'field':'descricao', 'label':'Descrição'}
+															]}">
+													</div>
+													<div class="form-group col-xs-12 col-md-2">
+														<label>Unidade de Medida</label>
+														<div class="input-group">
+															<span class="input-group-addon"><span class="fluigicon fluigicon-query-gap"></span></span>
+															<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
+														</div>
+													</div>
+													<div class="form-group col-xs-12 col-md-2">
+														<label>Quantidade</label>
+														<div class="input-group">
+															<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
+															<input type="number" class="form-control" name="quantidade" id="quantidade" placeholder="Informe a quantidade" step="1" min="1" onblur="verificarQuantidade(this)">
+														</div>
+													</div>
 												</div>
 											</td>
 										</tr>
@@ -145,13 +154,11 @@
 							</div>
 
 							<div class="row">
-								<div class="form-group col-md-2">
-									<label><br></label><br>
+								<div class="form-group col-xs-12 col-md-2">
 									<button type="button" class="btn btn-primary btn-block" id="btnAdicionarItem">Adicionar Item</button>
 								</div>
-								<div class="form-group col-md-2">
-									<label><br></label><br>
-									<button type="button" class="btn btn-default btn-block" id="btnIncluirProduto">Incluir Produto</button>
+								<div class="form-group col-xs-12 col-md-10">
+									<button type="button" class="btn btn-link" id="btnIncluirProduto">Não encontrou o produto desejado? Clique aqui.</button>
 								</div>
 							</div>
 						</div>
@@ -175,6 +182,7 @@
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
 										<select class="form-control" id="decisao" name="decisao">
+											<option value="" disabled selected>Selecione uma opção</option>
 											<option value="Aprovado">Aprovado</option>
 											<option value="Reprovado">Reprovado</option>
 											<option value="Ajustar">Ajustar</option>
