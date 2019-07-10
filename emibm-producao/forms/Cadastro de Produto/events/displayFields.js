@@ -2,6 +2,7 @@ function displayFields(form, customHTML) {
 
     var usuarioWKUser = getValue('WKUser');
     var atividade = getValue('WKNumState');
+	var numeroSolicitacao = getValue('WKNumProces');
     var nomeUsuarioWKUser = '';
     var constraintColleague = DatasetFactory.createConstraint('colleaguePK.colleagueId', usuarioWKUser, usuarioWKUser, ConstraintType.MUST);
 
@@ -27,7 +28,9 @@ function displayFields(form, customHTML) {
         } else {
             form.setVisibleById('painelAprovacao', false);
         }
-    }
+    } else {
+		form.setValue('solicitacaoFluig', numeroSolicitacao);
+	}
 
     if (atividade == 5) {
         form.setValue('dtAprov', currentDate);
