@@ -1,18 +1,20 @@
 function createDataset(fields, constraints, sortFields) {
 	try {
 		var dsWsCentroCusto = DatasetBuilder.newDataset();
-		var dados = getCentroCusto(); // JSON.Parse(getCentroCusto());
-		var centroCusto = [];
-
-		if (dados != null && dados.CUSTOS != undefined) {
-			centroCusto = dados.CUSTOS;
-		}
+		var dados = JSON.parse(getCentrosCusto()); // getCentrosCustoTeste();
 
 		dsWsCentroCusto.addColumn('codigo');
 		dsWsCentroCusto.addColumn('descricao');
 
-		for (var indexDados = 0; indexDados < centroCusto.length; indexDados++) {
-			dsWsCentroCusto.addRow([centroCusto[indexDados].CUSTO, centroCusto[indexDados].DESC01]);
+		if (dados != null && dados.CUSTOS != undefined) {
+			var centrosCusto = dados.CUSTOS;
+
+			for (var indexDados = 0; indexDados < centrosCusto.length; indexDados++) {
+				dsWsCentroCusto.addRow([centrosCusto[indexDados].CUSTO, centrosCusto[indexDados].DESC01]);
+			}
+		} else {
+			dsWsCentroCusto.addColumn('erro');
+			dsWsCentroCusto.addRow(['', '', 'Erro ao buscar centros de custo']);
 		}
 
 		return dsWsCentroCusto;
@@ -26,7 +28,32 @@ function createDataset(fields, constraints, sortFields) {
 	}
 }
 
-function getCentroCusto() {
+function getCentrosCusto() {
+	try {
+		var clientService = fluigAPI.getAuthorizeClientService();
+		var data = {
+			companyId: getValue('WKCompany') + '',
+			serviceCode: 'rest_protheus',
+			endpoint: 'CCUSTO',
+			method: 'get',
+			timeoutService: '100',
+			options: {
+				encoding: 'UTF-8',
+				mediaType: 'application/json'
+			}
+		}
+		var vo = clientService.invoke(JSON.stringify(data));
+
+		if (vo.getResult() == null || vo.getResult().isEmpty())
+			throw new Exception('O retorno está vazio');
+		else
+			return vo.getResult();
+	} catch (e) {
+		log.warn('Erro ao enviar requisição: ' + e);
+	}
+}
+
+function getCentrosCustoTeste() {
 	return {
 		"_classname": "CC_FULL",
 		"CUSTOS": [{

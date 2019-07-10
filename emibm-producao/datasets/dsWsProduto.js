@@ -1,36 +1,53 @@
 function createDataset(fields, constraints, sortFields) {
 	try {
 		var dsWsProduto = DatasetBuilder.newDataset();
-		var tipoRequisicao = 'consultar';
+		var constraintTipoRequisicao = 'GET';
 		var constraintCodigo = '';
+
+		dsWsProduto.addColumn('codigo');
+		dsWsProduto.addColumn('descricao');
+		dsWsProduto.addColumn('tipo');
+		dsWsProduto.addColumn('unMedida');
+		dsWsProduto.addColumn('tipoRequisicao');
 
 		if (constraints != null) {
 			for (var indexConstraints = 0; indexConstraints < constraints.length; indexConstraints++) {
-				if (constraints[indexConstraints] == 'codigo') {
+				if (constraints[indexConstraints] == 'codigo')
 					constraintCodigo = constraints[indexConstraints].initialValue;
-				}
+				if (constraints[indexConstraints] == 'tipoRequisicao')
+					constraintTipoRequisicao = constraints[indexConstraints].initialValue.toUpperCase();
 			}
 		}
 
-		if (tipoRequisicao == 'consultar' && constraintCodigo == '') {
-			var dados = getProduto(); // JSON.Parse(getProdutos());
-			var produtos = [];
+		switch (constraintTipoRequisicao) {
+			case 'GET':
+				var dados = [];
 
-			if (dados != null && dados.PRODUTOS != undefined) {
-				produtos = dados.PRODUTOS;
-			}
+				if (constraintCodigo == '')
+					dados = JSON.parse(getProdutos(null)); // getProdutosTeste();
+				else
+					dados = JSON.parse(getProdutos(constraintCodigo));
 
-			dsWsProduto.addColumn('codigo');
-			dsWsProduto.addColumn('descricao');
-			dsWsProduto.addColumn('tipo');
-			dsWsProduto.addColumn('unMedida');
-			dsWsProduto.addColumn('tipoRequisicao');
+				if (dados != null && dados.PRODUTOS != undefined) {
+					var produtos = dados.PRODUTOS;
 
-			for (var indexDados = 0; indexDados < produtos.length; indexDados++) {
-				dsWsProduto.addRow([produtos[indexDados].CODIGO, produtos[indexDados].DESC, produtos[indexDados].TIPO, produtos[indexDados].UM, tipoRequisicao]);
-			}
-		} else if (tipoRequisicao == 'consultar') {
+					for (var indexDados = 0; indexDados < produtos.length; indexDados++) {
+						dsWsProduto.addRow([produtos[indexDados].CODIGO, produtos[indexDados].DESC, produtos[indexDados].TIPO, produtos[indexDados].UM, constraintTipoRequisicao]);
+					}
+				} else {
+					dsWsProduto.addColumn('erro');
+					dsWsProduto.addRow(['', '', '', '', constraintTipoRequisicao, 'Erro ao buscar produtos']);
+				}
+				break;
 
+			case 'POST':
+
+				break;
+
+			default:
+				dsWsProduto.addColumn('erro');
+				dsWsProduto.addRow(['', '', '', '', constraintTipoRequisicao, 'Erro ao encontrar o tipo de requisição']);
+				break;
 		}
 
 		return dsWsProduto;
@@ -44,11 +61,37 @@ function createDataset(fields, constraints, sortFields) {
 	}
 }
 
-function getProduto() {
+function getProdutos(codigo) {
+	var endpoint = codigo == null ? 'PRODUTO' : 'PRODUTO?CODPRODUTO='+codigo;
+
+	try {
+		var clientService = fluigAPI.getAuthorizeClientService();
+		var data = {
+			companyId: getValue('WKCompany') + '',
+			serviceCode: 'rest_protheus',
+			endpoint: endpoint,
+			method: 'get',
+			timeoutService: '100',
+			options: {
+				encoding: 'UTF-8',
+				mediaType: 'application/json'
+			}
+		}
+		var vo = clientService.invoke(JSON.stringify(data));
+
+		if (vo.getResult() == null || vo.getResult().isEmpty())
+			throw new Exception('O retorno está vazio');
+		else
+			return vo.getResult();
+	} catch (e) {
+		log.warn('Erro ao enviar requisição: ' + e);
+	}
+}
+
+function getProdutosTeste() {
 	return {
 		"_classname": "PROD_FULL",
-		"PRODUTOS": [
-			{
+		"PRODUTOS": [{
 				"_classname": "PROD",
 				"CODIGO": "1",
 				"DESC": "MI 8 LITE",
