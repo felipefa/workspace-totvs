@@ -1,6 +1,7 @@
 function displayFields(form, customHTML) {
-	// WKNumState
+
 	var atividade = getValue('WKNumState');
+	var numeroSolicitacao = getValue('WKNumProces');
 	var formMode = form.getFormMode();
 	customHTML.append('<script>var ATIVIDADE = ' + atividade + '; var FORM_MODE = "' + formMode + '"</script>');
 
@@ -23,6 +24,8 @@ function displayFields(form, customHTML) {
 		form.setValue('dtSolicitacao', currentDate);
 		form.setValue('solicitante', nomeUsuarioWKUser);
 		form.setValue('matSolicitante', usuarioWKUser);
+	} else {
+		form.setValue('solicitacaoFluig', numeroSolicitacao);
 	}
 
 	if (atividade == 0 || atividade == 4) {
