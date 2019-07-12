@@ -1,5 +1,4 @@
 function displayFields(form, customHTML) {
-
 	var atividade = getValue('WKNumState');
 	var numeroSolicitacao = getValue('WKNumProces');
 	var formMode = form.getFormMode();

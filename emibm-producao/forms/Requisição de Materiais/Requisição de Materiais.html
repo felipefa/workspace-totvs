@@ -78,7 +78,8 @@
 									<label>Centro de Custo</label>
 									<input type="zoom" class="form-control" id="centroCusto" name="centroCusto" data-zoom="{
 										'displayKey':'descricao',
-										'datasetId':'dsWsCentroCusto',
+										'datasetId':'dsWsProtheus',
+										'filterValues':'endpoint,ccusto',
 										'placeholder': 'Selecione o centro de custo',
 										'fields':[
 											{'field':'codigo', 'label':'Código'},
@@ -112,7 +113,7 @@
 					<div id="collapseTwo" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
-								<table class="col-xs-12" id="tableItens" tablename="itens" noaddbutton="true">
+								<table class="col-xs-12" id="tableItens" tablename="itens" noaddbutton="true" nodeletebutton="true">
 									<thead>
 										<tr>
 											<th class="tableColumn"></th>
@@ -121,13 +122,18 @@
 									<tbody>
 										<tr>
 											<td class="fs-v-align-middle">
-												<div class="row">
+												<div class="">
 													<input type="hidden" name="codItem" id="codItem">
-													<div class="form-group col-xs-12 col-md-8">
+													<div class="col-md-1 bpm-mobile-trash-column">
+														<label><br></label><br>
+														<button class="btn btn-danger" onclick="Javascript:fnWdkRemoveChild(this)">Excluir</button>
+													</div>
+													<div class="form-group col-xs-12 col-md-6">
 														<label>Item</label>
 														<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
 															'displayKey':'descricao',
-															'datasetId':'dsWsProduto',
+															'datasetId':'dsWsProtheus',
+															'filterValues':'endpoint,produto',
 															'placeholder': 'Selecione um produto',
 															'fields':[
 																{'field':'codigo', 'label':'Código'},
@@ -141,7 +147,7 @@
 															<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
 														</div>
 													</div>
-													<div class="form-group col-xs-12 col-md-2">
+													<div class="form-group col-xs-12 col-md-3">
 														<label>Quantidade</label>
 														<div class="input-group">
 															<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
