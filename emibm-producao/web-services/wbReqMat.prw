@@ -225,7 +225,7 @@ WSMETHOD GET WSSERVICE CCUSTO
 	BeginSQL Alias cNextAlias
 		SELECT CTT_CUSTO, CTT_DESC01
 		FROM %table:CTT% CTT
-		WHERE CTT.%notdel% ORDER BY CTT_DESC01
+		WHERE CTT.%notdel% AND CTT_CLASSE = '2' AND CTT_BLOQ = '2' ORDER BY CTT_DESC01
 	EndSQL
 
 	(cNextAlias)->(DbGoTop())
@@ -830,11 +830,12 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLARMA
 
 	//Dado da solicitacao
 	Aadd(aDados, {"CP_EMISSAO", dDataBase, Nil})
-	Aadd(aDados, {"CP_DATPRF", oParseJSON:OBJETO:MOTIVO, Nil})
 
 	//Monta itens da solicitacao
 	For nI := 1 to len(oParseJSON:OBJETO:ITENS)
 		Aadd(aArray, {})
+		Aadd(aArray[Len(aArray)],{"CP_CC", oParseJSON:OBJETO:CCUSTO, Nil})
+		Aadd(aArray[Len(aArray)],{"CP_DATPRF", CtoD(oParseJSON:OBJETO:MOTIVO), Nil})
 		Aadd(aArray[Len(aArray)],{"CP_ITEM", oParseJSON:OBJETO:ITENS[nI]:ITEM, Nil})
 		Aadd(aArray[Len(aArray)],{"CP_PRODUTO", oParseJSON:OBJETO:ITENS[nI]:PRODUTO, Nil})
 		Aadd(aArray[Len(aArray)],{"CP_QUANT", VAL(oParseJSON:OBJETO:ITENS[nI]:QUANT), Nil})
@@ -844,7 +845,7 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLARMA
 	MsExecAuto( { | x, y, z | Mata105( x, y , z) }, aDados, aArray, 3)
 
 	If lMsErroAuto
-		cArqLog := oParseJSON:OBJETO:NUM + " - " + SubStr(Time(), 1, 5) + ".log"
+		cArqLog := dDataBase + " - " + SubStr(Time(), 1, 5) + ".log"
 		RollBackSX8()
 		cErro := MostraErro("\log_solarm", cArqLog)
 		cErro := TrataErro(cErro)
