@@ -35,12 +35,13 @@ WSMETHOD GET WSRECEIVE CODPRODUTO WSSERVICE PRODUTO
 		BeginSQL Alias cNextAlias
 			SELECT B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
+			WHERE SB1.%notdel% AND B1_MSBLQL <> '1' ORDER BY B1_DESC
 		EndSQL
 	ELSE
 		BeginSQL Alias cNextAlias
 			SELECT B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
-			WHERE B1_COD = %exp:cCodProduto%
+			WHERE B1_COD = %exp:cCodProduto% AND SB1.%notdel% AND B1_MSBLQL <> '1' ORDER BY B1_DESC
 		EndSQL
 	ENDIF
 
@@ -141,37 +142,33 @@ WSMETHOD POST WSRECEIVE PRODUTO WSSERVICE PRODUTO
 	FWJsonDeserialize(cJson, @oParseJSON)
 	SB1->(DbSetOrder(3))
 
-	If !(SB1->( DbSeek( xFilial("SB1") + oParseJSON:PRODUTO:COD ) ))
-		cCodSB1 := GetNewCod()
-		Aadd(aDadosProd, {"B1_COD", oParseJSON:PRODUTO:COD, Nil} )
-		Aadd(aDadosProd, {"B1_DESC", DecodeUTF8(oParseJSON:PRODUTO:DESC, "cp1252"), Nil} )
-		Aadd(aDadosProd, {"B1_TIPO", oParseJSON:PRODUTO:TIPO, Nil} )
-		Aadd(aDadosProd, {"B1_UM", oParseJSON:PRODUTO:UM, Nil} )
-		Aadd(aDadosProd, {"B1_LOCPAD", oParseJSON:PRODUTO:LOCPAD, Nil} )
+	cCodSB1 := GetNewCod()
+	Aadd(aDadosProd, {"B1_GRUPO", oParseJSON:PRODUTO:GRUPO, Nil} )
+	Aadd(aDadosProd, {"B1_ORIGEM", oParseJSON:PRODUTO:ORIGEM, Nil} )
+	Aadd(aDadosProd, {"B1_TIPO", oParseJSON:PRODUTO:TIPO, Nil} )
+	Aadd(aDadosProd, {"B1_DESC", DecodeUTF8(oParseJSON:PRODUTO:DESC, "cp1252"), Nil} )
+	Aadd(aDadosProd, {"B1_POSIPI", oParseJSON:PRODUTO:IPINCM, Nil} )
+	Aadd(aDadosProd, {"B1_UM", oParseJSON:PRODUTO:UM, Nil} )
+	Aadd(aDadosProd, {"B1_LOCPAD", oParseJSON:PRODUTO:LOCPAD, Nil} )
 
-		MsExecAuto({|x,y| MATA010(x,y)}, aDadosProd, 3)
+	MsExecAuto({|x,y| MATA010(x,y)}, aDadosProd, 3)
 
-		If lMsErroAuto
-			cArqLog := oParseJSON:PRODUTO:COD + " - " + SubStr(Time(), 1, 5) + ".log"
-			RollBackSX8()
-			cErro := MostraErro("\log_prod", cArqLog)
-			cErro := TrataErro(cErro)
-			SetRestFault(400, cErro)
-			lRet := .F.
-		Else
-			ConfirmSX8()
-			cJSONRet := '{"cod": "200"';
-						+ ', "cod_produto":"' + SB1->B1_COD	+ '"';
-						+ ', "desc":"' + SB1->B1_DESC + '"';
-						+ ', "sucesso":"TRUE"';
-						+ ', "msg":"Produto cadastrado com sucesso!"';
-						+'}'
-
-			::SetResponse(cJSONRet)
-		EndIf
-	Else
-		SetRestFault(400, "Ja existe produto cadastrado com este codigo: " + SB1->B1_COD + " - " + SB1->B1_DESC)
+	If lMsErroAuto
+		cArqLog := oParseJSON:PRODUTO:DESC + " - " + SubStr(Time(), 1, 5) + ".log"
+		RollBackSX8()
+		cErro := MostraErro("\log_prod", cArqLog)
+		cErro := TrataErro(cErro)
+		SetRestFault(400, cErro)
 		lRet := .F.
+	Else
+		ConfirmSX8()
+		cJSONRet := '{"cod": "200"';
+					+ ', "desc":"' + SB1->B1_DESC + '"';
+					+ ', "sucesso":"TRUE"';
+					+ ', "msg":"Produto cadastrado com sucesso!"';
+					+'}'
+
+		::SetResponse(cJSONRet)
 	EndIf
 
 	RestArea(aArea)
@@ -228,6 +225,7 @@ WSMETHOD GET WSSERVICE CCUSTO
 	BeginSQL Alias cNextAlias
 		SELECT CTT_CUSTO, CTT_DESC01
 		FROM %table:CTT% CTT
+		WHERE CTT.%notdel% ORDER BY CTT_DESC01
 	EndSQL
 
 	(cNextAlias)->(DbGoTop())
@@ -311,6 +309,7 @@ WSMETHOD GET WSSERVICE ARMAZEM
 	BeginSQL Alias cNextAlias
 		SELECT NNR_CODIGO, NNR_DESCRI
 		FROM %table:NNR% NNR
+		WHERE NNR.%notdel% ORDER BY NNR_DESCRI
 	EndSQL
 
 	(cNextAlias)->(DbGoTop())
@@ -394,6 +393,7 @@ WSMETHOD GET WSSERVICE UNIMED
 	BeginSQL Alias cNextAlias
 		SELECT AH_UNIMED, AH_UMRES
 		FROM %table:SAH% SAH
+		WHERE SAH.%notdel% ORDER BY AH_UMRES
 	EndSQL
 
 	(cNextAlias)->(DbGoTop())
@@ -453,6 +453,258 @@ Return(Self)
 
 Method Add(oUniMed) Class UM_FULL
 	Aadd(::UniMeds, oUniMed)
+Return
+
+/* ------------------------------------------------------------------------------- */
+/* ----------------------------------- Grupo ------------------------------------- */
+/* ------------------------------------------------------------------------------- */
+//Inicio da Declaracao do Web Service Grupo de produto
+WSRESTFUL GRUPROD DESCRIPTION "Servico REST - Grupo de Produto"
+	WSMETHOD GET DESCRIPTION "Retorna as Grupo de Produto cadastrados" WSSYNTAX "/GRUPROD"
+END WSRESTFUL
+
+//Inicio do Metodo GET do Web Service de Grupo de Produto
+WSMETHOD GET WSSERVICE GRUPROD
+	Local aArea := GetArea()
+	Local cNextAlias := GetNextAlias()
+	Local oGP := GP():New() //Objeto da classe Grupo de Produto
+	Local oResponse := GP_FULL():New() //Objeto que sera serializado
+	Local cJSON	:= ""
+	Local lRet := .T.
+
+	::SetContentType("application/json")
+
+	BeginSQL Alias cNextAlias
+		SELECT BM_GRUPO, BM_DESC
+		FROM %table:SBM% SBM
+		WHERE SBM.%notdel% ORDER BY BM_DESC
+	EndSQL
+
+	(cNextAlias)->(DbGoTop())
+
+	If (cNextAlias)->(!Eof())
+		While (cNextAlias)->(!Eof())
+			oGP:SetCod(AllTrim((cNextAlias)->BM_GRUPO))
+			oGP:SetDesc(EncodeUTF8(AllTrim((cNextAlias)->BM_DESC), "cp1252"))
+			oResponse:Add(oGP)
+			oGP := GP():New()
+			(cNextAlias)->(DbSkip())
+		EndDo
+
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		::SetResponse(cJSON)
+	Else
+		SetRestFault(400, "Nao existe grupo cadastrados.")
+		lRet := .F.
+	EndIf
+
+	RestArea(aArea)
+	(cNextAlias)->(DbcloseArea())
+Return(lRet)
+
+//Declaracao de Classes Utilizadas no Web Service Grupo de Produto
+Class GP
+	Data grupo As String
+	Data desc As String
+
+	Method New() Constructor
+	Method SetCod(cGrupo)
+	Method SetDesc(cDesc)
+EndClass
+
+Class GP_FULL
+	Data Grupos
+
+	Method New() Constructor
+	Method Add()
+EndClass
+
+//Inicio dos Metodos Utilizados Pelas Classes Grupo de Produto
+Method New() Class GP
+	::grupo := ""
+	::desc := ""
+Return(Self)
+
+Method SetCod(cGrupo) Class GP
+Return(::grupo := cGrupo)
+
+Method SetDesc(cDesc) Class GP
+Return(::desc := cDesc)
+
+Method New() Class GP_FULL
+	::Grupos := {}
+Return(Self)
+
+Method Add(oGrupo) Class GP_FULL
+	Aadd(::Grupos, oGrupo)
+Return
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------------ ORIGEM ----------------------------------- */
+/* ------------------------------------------------------------------------------- */
+//Inicio da Declaracao do Web Service Origem do produto
+WSRESTFUL ORIGEM DESCRIPTION "Servico REST - Origem do produto"
+	WSMETHOD GET DESCRIPTION "Retorna os cadastrado de Origem de Produto" WSSYNTAX "/ORIGEM"
+END WSRESTFUL
+
+//Inicio do Metodo GET do Web Service de Origem
+WSMETHOD GET WSSERVICE ORIGEM
+	Local aArea := GetArea()
+	Local cNextAlias := GetNextAlias()
+	Local oOrigem := Origem():New() //Objeto da classe Origem
+	Local oResponse := Origem_FULL():New() //Objeto que sera serializado
+	Local cJSON	:= ""
+	Local lRet := .T.
+
+	::SetContentType("application/json")
+
+	BeginSQL Alias cNextAlias
+		SELECT X5_CHAVE, X5_DESCRI
+		FROM  %Table:SX5% SX5
+		WHERE SX5.%NotDel% AND X5_TABELA = 'S0' ORDER BY X5_CHAVE
+	EndSQL
+
+	(cNextAlias)->(DbGoTop())
+
+	If (cNextAlias)->(!Eof())
+		While (cNextAlias)->(!Eof())
+			oOrigem:SetCod(AllTrim((cNextAlias)->X5_CHAVE))
+			oOrigem:SetDesc(EncodeUTF8(AllTrim((cNextAlias)->X5_DESCRI), "cp1252"))
+			oResponse:Add(oOrigem)
+			oOrigem := Origem():New()
+			(cNextAlias)->(DbSkip())
+		EndDo
+
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		::SetResponse(cJSON)
+	Else
+		SetRestFault(400, "Nao existe dados na tabela de origem.")
+		lRet := .F.
+	EndIf
+
+	RestArea(aArea)
+	(cNextAlias)->(DbcloseArea())
+Return(lRet)
+
+//Declaracao de Classes Utilizadas no Web Service Origem
+Class Origem
+	Data cod As String
+	Data desc As String
+
+	Method New() Constructor
+	Method SetCod(cCod)
+	Method SetDesc(cDesc)
+EndClass
+
+Class Origem_FULL
+	Data Origens
+
+	Method New() Constructor
+	Method Add()
+EndClass
+
+//Inicio dos Metodos Utilizados Pelas Classes Origem
+Method New() Class Origem
+	::cod := ""
+	::desc := ""
+Return(Self)
+
+Method SetCod(cCod) Class Origem
+Return(::cod := cCod)
+
+Method SetDesc(cDesc) Class Origem
+Return(::desc := cDesc)
+
+Method New() Class Origem_FULL
+	::Origens := {}
+Return(Self)
+
+Method Add(oOrigem) Class Origem_FULL
+	Aadd(::Origens, oOrigem)
+Return
+
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------------ NCM -------------------------------------- */
+/* ------------------------------------------------------------------------------- */
+//Inicio da Declaracao do Web Service NCM
+WSRESTFUL NCM DESCRIPTION "Servico REST - Nomenclatura Comum do Mercosul (NCM)"
+	WSMETHOD GET DESCRIPTION "Retorna os NCMs cadastrados" WSSYNTAX "/NCM"
+END WSRESTFUL
+
+//Inicio do Metodo GET do Web Service de NCM
+WSMETHOD GET WSSERVICE NCM
+	Local aArea := GetArea()
+	Local cNextAlias := GetNextAlias()
+	Local oNCM := NCM():New() //Objeto da classe NCM
+	Local oResponse := NCM_FULL():New() //Objeto que sera serializado
+	Local cJSON	:= ""
+	Local lRet := .T.
+
+	::SetContentType("application/json")
+
+	BeginSQL Alias cNextAlias
+		SELECT YD_TEC, YD_DESC_P
+		FROM %table:SYD% SYD
+		WHERE SYD.%notdel% ORDER BY YD_DESC_P
+	EndSQL
+
+	(cNextAlias)->(DbGoTop())
+
+	If (cNextAlias)->(!Eof())
+		While (cNextAlias)->(!Eof())
+			oNCM:SetCod(AllTrim((cNextAlias)->YD_TEC))
+			oNCM:SetDesc(EncodeUTF8(AllTrim((cNextAlias)->YD_DESC_P), "cp1252"))
+			oResponse:Add(oNCM)
+			oNCM := NCM():New()
+			(cNextAlias)->(DbSkip())
+		EndDo
+
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		::SetResponse(cJSON)
+	Else
+		SetRestFault(400, "Nao existe NCM cadastrados.")
+		lRet := .F.
+	EndIf
+
+	RestArea(aArea)
+	(cNextAlias)->(DbcloseArea())
+Return(lRet)
+
+//Declaracao de Classes Utilizadas no Web Service NCM
+Class NCM
+	Data cod As String
+	Data desc As String
+
+	Method New() Constructor
+	Method SetCod(cCod)
+	Method SetDesc(cDesc)
+EndClass
+
+Class NCM_FULL
+	Data Ncms
+
+	Method New() Constructor
+	Method Add()
+EndClass
+
+//Inicio dos Metodos Utilizados Pelas Classes NCM
+Method New() Class NCM
+	::cod := ""
+	::desc := ""
+Return(Self)
+
+Method SetCod(cCod) Class NCM
+Return(::cod := cCod)
+
+Method SetDesc(cDesc) Class NCM
+Return(::desc := cDesc)
+
+Method New() Class NCM_FULL
+	::Ncms := {}
+Return(Self)
+
+Method Add(oNCM) Class NCM_FULL
+	Aadd(::Ncms, oNCM)
 Return
 
 /* -------------------------------------------------------------------------------------- */
