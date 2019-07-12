@@ -29,9 +29,12 @@
 			<!-- CAMPOS OCULTOS -->
 			<input type="hidden" name="matSolicitante" id="matSolicitante">
 			<input type="hidden" name="matGestor" id="matGestor">
+			<input type="hidden" name="codGrupo" id="codGrupo">
 			<input type="hidden" name="codTipo" id="codTipo">
 			<input type="hidden" name="codUnMedida" id="codUnMedida">
 			<input type="hidden" name="codArmazemPad" id="codArmazemPad">
+			<input type="hidden" name="codPosIpiNcm" id="codPosIpiNcm">
+			<input type="hidden" name="codOrigem" id="codOrigem">
 			<input type="hidden" name="solicitacaoFluig" id="solicitacaoFluig">
 
 			<!-- PAINEL 'DADOS DA SOLICITAÇÃO' -->
@@ -86,53 +89,93 @@
 					<div id="collapseTwo" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Grupo</label>
+									<input type="zoom" class="form-control" name="grupo" id="grupo" data-zoom="{
+										'displayKey':'descricao',
+										'datasetId':'dsWsProtheus',
+										'placeholder': 'Selecione o grupo',
+										'filterValues':'endpoint,gruprod',
+										'fields':[
+											{'field':'chave', 'label':'Chave'},
+											{'field':'descricao', 'label':'Descrição'}
+										]}">
+								</div>
 								<div class="form-group col-md-4">
+									<label>Tipo</label>
+									<input type="zoom" class="form-control" name="tipo" id="tipo" data-zoom="{
+										'displayKey':'descricao',
+										'datasetId':'dsWsProtheus',
+										'placeholder': 'Selecione o tipo de produto',
+										'filterValues':'endpoint,tipoprod',
+										'fields':[
+											{'field':'chave', 'label':'Chave'},
+											{'field':'descricao', 'label':'Descrição'}
+										]}">
+								</div>
+								<!-- <div class="form-group col-md-4">
 									<label>Código</label>
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-key"></span></span>
 										<input type="text" class="form-control" name="codigo" id="codigo" placeholder="Informe o código" onblur="validarCodigo(this)">
 									</div>
-								</div>
-								<div class="form-group col-md-8">
+								</div> -->
+								<div class="form-group col-md-5">
 									<label>Descrição</label>
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-tag"></span></span>
-										<input type="text" class="form-control" name="descricao" id="descricao" placeholder="Informe a descrição">
+										<input type="text" class="form-control" name="descricao" id="descricao" placeholder="Informe a descrição" onblur="transformarDescricao(this)" style="text-transform: uppercase;">
 									</div>
 								</div>
 							</div>
 
 							<div class="row">
-								<div class="form-group col-md-4">
-									<label>Tipo</label>
-									<input type="zoom" class="form-control" name="tipo" id="tipo" data-zoom="{
-										'displayKey':'descricao',
-										'datasetId':'dsWsTipoProduto',
-										'placeholder': 'Selecione o tipo',
-										'fields':[
-											{'field':'chave', 'label':'Chave','visible':'false'},
-											{'field':'descricao', 'label':'Descrição'}
-										]}">
-								</div>
-								<div class="form-group col-md-4">
+								<div class="form-group col-md-3">
 									<label>Unidade de Medida</label>
 									<input type="zoom" class="form-control" name="unMedida" id="unMedida" data-zoom="{
 										'displayKey':'descricao',
-										'datasetId':'dsWsUnidadeMedida',
+										'datasetId':'dsWsProtheus',
 										'placeholder': 'Selecione a unidade de medida',
+										'filterValues':'endpoint,unimed',
 										'fields':[
-											{'field':'chave', 'label':'Chave','visible':'false'},
+											{'field':'chave', 'label':'Chave'},
 											{'field':'descricao', 'label':'Descrição'}
 										]}">
 								</div>
-								<div class="form-group col-md-4">
+								<div class="form-group col-md-3">
 									<label>Armazém Padrão</label>
 									<input type="zoom" class="form-control" name="armazem" id="armazem" data-zoom="{
 										'displayKey':'descricao',
-										'datasetId':'dsWsArmazem',
+										'datasetId':'dsWsProtheus',
 										'placeholder': 'Selecione o armazém padrão',
+										'filterValues':'endpoint,armazem',
 										'fields':[
-											{'field':'codigo', 'label':'Código','visible':'false'},
+											{'field':'codigo', 'label':'Código'},
+											{'field':'descricao', 'label':'Descrição'}
+										]}">
+								</div>
+								<div class="form-group col-md-3">
+									<label>Pos. IPI/NCM</label>
+									<input type="zoom" class="form-control" name="posIpiNcm" id="posIpiNcm" data-zoom="{
+										'displayKey':'descricao',
+										'datasetId':'dsWsProtheus',
+										'placeholder': 'Selecione a NCM',
+										'resultLimit': '25',
+										'filterValues':'endpoint,ncm',
+										'fields':[
+											{'field':'chave', 'label':'Chave'},
+											{'field':'descricao', 'label':'Descrição'}
+										]}">
+								</div>
+								<div class="form-group col-md-3">
+									<label>Origem</label>
+									<input type="zoom" class="form-control" name="origem" id="origem" data-zoom="{
+										'displayKey':'descricao',
+										'datasetId':'dsWsProtheus',
+										'placeholder': 'Selecione a origem',
+										'filterValues':'endpoint,origem',
+										'fields':[
+											{'field':'chave', 'label':'Chave'},
 											{'field':'descricao', 'label':'Descrição'}
 										]}">
 								</div>

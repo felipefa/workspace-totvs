@@ -12,10 +12,15 @@ function enableFields(form) {
     if (atividade == 5) {
         // PAINEL 'DADOS DA SOLICITAÇÃO'
         form.setEnabled('motivo', false);
-        form.setEnabled('codigo', false);
-        form.setEnabled('descricao', false);
+
+		// PAINEL 'PRODUTO'
+        // form.setEnabled('codigo', false);
+        form.setEnabled('grupo', false);
         form.setEnabled('tipo', false);
+        form.setEnabled('descricao', false);
         form.setEnabled('unMedida', false);
         form.setEnabled('armazem', false);
+        form.setEnabled('posIpiNcm', false);
+        form.setEnabled('origem', false);
     }
 }

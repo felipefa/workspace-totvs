@@ -1,8 +1,8 @@
 function displayFields(form, customHTML) {
-
     var usuarioWKUser = getValue('WKUser');
     var atividade = getValue('WKNumState');
-	var numeroSolicitacao = getValue('WKNumProces');
+    var numeroSolicitacao = getValue('WKNumProces');
+    var formMode = form.getFormMode();
     var nomeUsuarioWKUser = '';
     var constraintColleague = DatasetFactory.createConstraint('colleaguePK.colleagueId', usuarioWKUser, usuarioWKUser, ConstraintType.MUST);
 
@@ -14,20 +14,19 @@ function displayFields(form, customHTML) {
     var currentDate = day + '/' + month + '/' + year;
 
     var colleague = DatasetFactory.getDataset('colleague', null, [constraintColleague], null);
-    if (colleague.rowsCount > 0) {
+
+    if (colleague.rowsCount > 0)
         nomeUsuarioWKUser = colleague.getValue(0, 'colleagueName');
-    }
 
     if (atividade == 0) {
         form.setValue('dtSolicitacao', currentDate);
         form.setValue('solicitante', nomeUsuarioWKUser);
         form.setValue('matSolicitante', usuarioWKUser);
 
-        if (form.getValue('decisao') != '') {
+        if (form.getValue('decisao') != '')
             form.setVisibleById('painelAprovacao', true);
-        } else {
+        else
             form.setVisibleById('painelAprovacao', false);
-        }
     } else {
 		form.setValue('solicitacaoFluig', numeroSolicitacao);
 	}
@@ -36,6 +35,9 @@ function displayFields(form, customHTML) {
         form.setValue('dtAprov', currentDate);
         form.setValue('responsavelAprov', nomeUsuarioWKUser);
         form.setValue('matGestor', usuarioWKUser);
+
+        if (formMode == 'VIEW' && form.getValue('decisao') == '')
+        	form.setVisibleById('painelAprovacao', false);
     }
 
 }
