@@ -2,16 +2,16 @@
   <ProcessDefinition>
     <processDefinitionPK>
       <companyId>1</companyId>
-      <processId>CadastroDeProduto</processId>
+      <processId>SolicitacaoDeCompras</processId>
     </processDefinitionPK>
-    <processDescription>Cadastro de Produto</processDescription>
+    <processDescription>Solicitação de Compras</processDescription>
     <instruction></instruction>
     <active>true</active>
     <publicProcess>false</publicProcess>
     <volumeId>Default</volumeId>
     <categoryId>Almoxarifado</categoryId>
     <managerEngineAllocationId>Papel</managerEngineAllocationId>
-    <managerEngineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;aprovadorCadastroProduto&lt;/Role&gt;&lt;/AssignmentController&gt;</managerEngineAllocationConfiguration>
+    <managerEngineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;gestorRequisicoesMateriais&lt;/Role&gt;&lt;/AssignmentController&gt;</managerEngineAllocationConfiguration>
     <snapshotFrequency>0</snapshotFrequency>
     <baseDay>0</baseDay>
     <baseMonth>0</baseMonth>
@@ -28,11 +28,11 @@
   <ProcessDefinitionVersion>
     <processDefinitionVersionPK>
       <companyId>1</companyId>
-      <processId>Cadastro de Produto</processId>
-      <version>2</version>
+      <processId>Solicitação de Compras</processId>
+      <version>1</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>5</formId>
+    <formId>35</formId>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
     <controlsAttachmentsSecurity>false</controlsAttachmentsSecurity>
@@ -50,7 +50,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>4</sequence>
       </processStatePK>
@@ -60,11 +60,11 @@
       <deadlineTime>0</deadlineTime>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
-      <engineAllocationId></engineAllocationId>
-      <engineAllocationConfiguration></engineAllocationConfiguration>
+      <engineAllocationId>Papel</engineAllocationId>
+      <engineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;solicitanteMateriais&lt;/Role&gt;&lt;/AssignmentController&gt;</engineAllocationConfiguration>
       <selectColleague>1</selectColleague>
       <initialState>true</initialState>
-      <notifyAuthorityDelay>true</notifyAuthorityDelay>
+      <notifyAuthorityDelay>false</notifyAuthorityDelay>
       <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
       <allowanceAuthorityTime>3600</allowanceAuthorityTime>
       <frequenceAuthorityTime>3600</frequenceAuthorityTime>
@@ -73,7 +73,7 @@
       <transferAttachments>false</transferAttachments>
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
-      <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
+      <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>150</positionX>
@@ -100,19 +100,19 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>5</sequence>
       </processStatePK>
-      <stateName>Aprovar Cadastro</stateName>
-      <stateDescription>Aprovar Cadastro</stateDescription>
+      <stateName>Aprovar Requisição</stateName>
+      <stateDescription>Aprovar Requisição</stateDescription>
       <instruction></instruction>
       <deadlineTime>0</deadlineTime>
       <deadlineFieldName></deadlineFieldName>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
       <engineAllocationId>Pool Grupo</engineAllocationId>
-      <engineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Group&gt;aprovadoresCadastroProduto&lt;/Group&gt;&lt;/AssignmentController&gt;</engineAllocationConfiguration>
+      <engineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Group&gt;gestoresRequisicoesMateriais&lt;/Group&gt;&lt;/AssignmentController&gt;</engineAllocationConfiguration>
       <selectColleague>1</selectColleague>
       <initialState>false</initialState>
       <notifyAuthorityDelay>false</notifyAuthorityDelay>
@@ -152,9 +152,9 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <sequence>7</sequence>
+        <sequence>9</sequence>
       </processStatePK>
       <stateName>Aprovado?</stateName>
       <stateDescription>Aprovado?</stateDescription>
@@ -164,7 +164,7 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>500</positionX>
+      <positionX>490</positionX>
       <positionY>30</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
@@ -177,12 +177,12 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <sequence>9</sequence>
+        <sequence>11</sequence>
       </processStatePK>
-      <stateName>Cadastrar e finalizar</stateName>
-      <stateDescription>Cadastrar e finalizar</stateDescription>
+      <stateName>Lançar e finalizar</stateName>
+      <stateDescription>Lançar e finalizar</stateDescription>
       <instruction>Atividade final do processo</instruction>
       <deadlineTime>0</deadlineTime>
       <joint>false</joint>
@@ -224,9 +224,9 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <sequence>11</sequence>
+        <sequence>13</sequence>
       </processStatePK>
       <stateName>Cancelar e finalizar</stateName>
       <stateDescription>Cancelar e finalizar</stateDescription>
@@ -273,34 +273,34 @@
     <ConditionProcessState>
       <conditionProcessStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>1</expressionOrder>
-        <version>2</version>
-        <sequence>7</sequence>
+        <version>1</version>
+        <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Aprovado&quot;</condition>
-      <destinationSequenceId>9</destinationSequenceId>
-      <conditionType>0</conditionType>
-    </ConditionProcessState>
-    <ConditionProcessState>
-      <conditionProcessStatePK>
-        <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
-        <expressionOrder>2</expressionOrder>
-        <version>2</version>
-        <sequence>7</sequence>
-      </conditionProcessStatePK>
-      <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
       <destinationSequenceId>11</destinationSequenceId>
       <conditionType>0</conditionType>
     </ConditionProcessState>
     <ConditionProcessState>
       <conditionProcessStatePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
+        <expressionOrder>2</expressionOrder>
+        <version>1</version>
+        <sequence>9</sequence>
+      </conditionProcessStatePK>
+      <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
+      <destinationSequenceId>13</destinationSequenceId>
+      <conditionType>0</conditionType>
+    </ConditionProcessState>
+    <ConditionProcessState>
+      <conditionProcessStatePK>
+        <companyId>1</companyId>
+        <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>3</expressionOrder>
-        <version>2</version>
-        <sequence>7</sequence>
+        <version>1</version>
+        <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Ajustar&quot;</condition>
       <destinationSequenceId>4</destinationSequenceId>
@@ -313,7 +313,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>6</linkSequence>
       </processLinkPK>
@@ -330,14 +330,14 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <linkSequence>8</linkSequence>
+        <linkSequence>10</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
       <initialStateSequence>5</initialStateSequence>
-      <finalStateSequence>7</finalStateSequence>
+      <finalStateSequence>9</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
       <automaticLink>false</automaticLink>
@@ -347,14 +347,14 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <linkSequence>10</linkSequence>
+        <linkSequence>12</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
-      <initialStateSequence>7</initialStateSequence>
-      <finalStateSequence>9</finalStateSequence>
+      <initialStateSequence>9</initialStateSequence>
+      <finalStateSequence>11</finalStateSequence>
       <returnLabel></returnLabel>
       <name>Sim</name>
       <automaticLink>false</automaticLink>
@@ -364,14 +364,14 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <linkSequence>12</linkSequence>
+        <linkSequence>14</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
-      <initialStateSequence>7</initialStateSequence>
-      <finalStateSequence>11</finalStateSequence>
+      <initialStateSequence>9</initialStateSequence>
+      <finalStateSequence>13</finalStateSequence>
       <returnLabel></returnLabel>
       <name>Não</name>
       <automaticLink>false</automaticLink>
@@ -381,13 +381,13 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
-        <linkSequence>13</linkSequence>
+        <linkSequence>15</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
-      <initialStateSequence>7</initialStateSequence>
+      <initialStateSequence>9</initialStateSequence>
       <finalStateSequence>4</finalStateSequence>
       <returnLabel></returnLabel>
       <name>Ajustar</name>
@@ -406,12 +406,12 @@
       <width>831</width>
       <positionX>10</positionX>
       <positionY>10</positionY>
-      <stateName>Cadastro de Produto</stateName>
+      <stateName>Solicitação de Compras</stateName>
       <type>1</type>
       <parentSequence>0</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>1</sequence>
       </swimLanePK>
@@ -427,7 +427,7 @@
       <parentSequence>1</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>2</sequence>
       </swimLanePK>
@@ -443,7 +443,7 @@
       <parentSequence>1</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>3</sequence>
       </swimLanePK>
@@ -455,8 +455,8 @@
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
-        <version>2</version>
+        <processId>SolicitacaoDeCompras</processId>
+        <version>1</version>
         <linkSequence>6</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -466,12 +466,12 @@
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
-        <processId>CadastroDeProduto</processId>
-        <version>2</version>
-        <linkSequence>8</linkSequence>
+        <processId>SolicitacaoDeCompras</processId>
+        <version>1</version>
+        <linkSequence>10</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
-      <positionX>530</positionX>
+      <positionX>519</positionX>
       <positionY>228</positionY>
     </ProcessLinkBend>
   </list>

@@ -2,9 +2,9 @@
   <ProcessDefinition>
     <processDefinitionPK>
       <companyId>1</companyId>
-      <processId>RequisicaoDeMateriais</processId>
+      <processId>SolicitacaoDeCompras</processId>
     </processDefinitionPK>
-    <processDescription>Requisição de Materiais</processDescription>
+    <processDescription>Solicitação de Compras</processDescription>
     <instruction></instruction>
     <active>true</active>
     <publicProcess>false</publicProcess>
@@ -28,11 +28,11 @@
   <ProcessDefinitionVersion>
     <processDefinitionVersionPK>
       <companyId>1</companyId>
-      <processId>Requisição de Materiais</processId>
-      <version>2</version>
+      <processId>Solicitação de Compras</processId>
+      <version>1</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>138</formId>
+    <formId>6</formId>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
     <controlsAttachmentsSecurity>false</controlsAttachmentsSecurity>
@@ -50,7 +50,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>4</sequence>
       </processStatePK>
@@ -100,7 +100,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>5</sequence>
       </processStatePK>
@@ -152,7 +152,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>9</sequence>
       </processStatePK>
@@ -177,7 +177,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>11</sequence>
       </processStatePK>
@@ -224,7 +224,7 @@
     <ProcessState>
       <processStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>13</sequence>
       </processStatePK>
@@ -273,9 +273,9 @@
     <ConditionProcessState>
       <conditionProcessStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>1</expressionOrder>
-        <version>2</version>
+        <version>1</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Aprovado&quot;</condition>
@@ -285,9 +285,9 @@
     <ConditionProcessState>
       <conditionProcessStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>2</expressionOrder>
-        <version>2</version>
+        <version>1</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
@@ -297,9 +297,9 @@
     <ConditionProcessState>
       <conditionProcessStatePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>3</expressionOrder>
-        <version>2</version>
+        <version>1</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Ajustar&quot;</condition>
@@ -313,7 +313,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>6</linkSequence>
       </processLinkPK>
@@ -330,7 +330,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>10</linkSequence>
       </processLinkPK>
@@ -347,7 +347,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>12</linkSequence>
       </processLinkPK>
@@ -364,7 +364,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>14</linkSequence>
       </processLinkPK>
@@ -381,7 +381,7 @@
     <ProcessLink>
       <processLinkPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <linkSequence>15</linkSequence>
       </processLinkPK>
@@ -402,34 +402,34 @@
       <workflowProcessEventPK>
         <companyId>1</companyId>
         <eventId>afterStateEntry</eventId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
       </workflowProcessEventPK>
       <eventDescription>function afterStateEntry(sequenceId) {&#xd;
 	// ATIVIDADE &apos;LANÇAR E FINALIZAR&apos;&#xd;
-	if (sequenceId == 11) {&#xd;
-		var itens = [];&#xd;
-		var itensPaiFilho = hAPI.getChildrenIndexes(&apos;itens&apos;);&#xd;
+	// if (sequenceId == 11) {&#xd;
+	// 	var itens = [];&#xd;
+	// 	var itensPaiFilho = hAPI.getChildrenIndexes(&apos;itens&apos;);&#xd;
 &#xd;
-		for (var index = 0; index &lt; itensPaiFilho.length; index++) {&#xd;
-			itens.push({&#xd;
-				&apos;ITEM&apos;: index++,&#xd;
-				&apos;CODIGO&apos;: hAPI.getCardValue(&apos;codItem___&apos; + itensPaiFilho[index]),&#xd;
-				&apos;QUANTIDADE&apos;: hAPI.getCardValue(&apos;quantidade___&apos; + itensPaiFilho[index]),&#xd;
-			});&#xd;
-		}&#xd;
+	// 	for (var index = 0; index &lt; itensPaiFilho.length; index++) {&#xd;
+	// 		itens.push({&#xd;
+	// 			&apos;ITEM&apos;: index++,&#xd;
+	// 			&apos;CODIGO&apos;: hAPI.getCardValue(&apos;codItem___&apos; + itensPaiFilho[index]),&#xd;
+	// 			&apos;QUANTIDADE&apos;: hAPI.getCardValue(&apos;quantidade___&apos; + itensPaiFilho[index]),&#xd;
+	// 		});&#xd;
+	// 	}&#xd;
 &#xd;
-		var dados = {&#xd;
-			&apos;OBJETO&apos;: {&#xd;
-				&apos;MOTIVO&apos;: hAPI.getCardValue(&apos;dtNecessidade&apos;),&#xd;
-				&apos;OBS&apos;: &apos;Solicitação fluig ID &apos;,&#xd;
-				&apos;ITENS&apos;: itens,&#xd;
-			},&#xd;
-		}&#xd;
+	// 	var dados = {&#xd;
+	// 		&apos;OBJETO&apos;: {&#xd;
+	// 			&apos;MOTIVO&apos;: hAPI.getCardValue(&apos;dtNecessidade&apos;),&#xd;
+	// 			&apos;OBS&apos;: &apos;Solicitação fluig ID &apos;,&#xd;
+	// 			&apos;ITENS&apos;: itens,&#xd;
+	// 		},&#xd;
+	// 	}&#xd;
 &#xd;
-		var constraints = [DatasetFactory.createConstraint(&apos;&apos;, dados, dados, ConstraintType.MUST)];&#xd;
-		var dsWsRequisicaoMateriais = DatasetFactory.getDataset(&apos;dsWsRequisicaoMateriais&apos;, null, constraints, null);&#xd;
-	}&#xd;
+	// 	var constraints = [DatasetFactory.createConstraint(&apos;&apos;, dados, dados, ConstraintType.MUST)];&#xd;
+	// 	var dsWsRequisicaoMateriais = DatasetFactory.getDataset(&apos;dsWsRequisicaoMateriais&apos;, null, constraints, null);&#xd;
+	// }&#xd;
 }</eventDescription>
     </WorkflowProcessEvent>
   </list>
@@ -446,7 +446,7 @@
       <parentSequence>0</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>1</sequence>
       </swimLanePK>
@@ -456,13 +456,13 @@
       <height>145</height>
       <width>801</width>
       <positionX>40</positionX>
-      <positionY>155</positionY>
+      <positionY>10</positionY>
       <stateName>Gestor</stateName>
       <type>2</type>
       <parentSequence>1</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>2</sequence>
       </swimLanePK>
@@ -472,13 +472,13 @@
       <height>145</height>
       <width>801</width>
       <positionX>40</positionX>
-      <positionY>10</positionY>
+      <positionY>155</positionY>
       <stateName>Solicitante</stateName>
       <type>2</type>
       <parentSequence>1</parentSequence>
       <swimLanePK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
+        <processId>SolicitacaoDeCompras</processId>
         <version>1</version>
         <sequence>3</sequence>
       </swimLanePK>
@@ -490,19 +490,19 @@
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
-        <version>2</version>
+        <processId>SolicitacaoDeCompras</processId>
+        <version>1</version>
         <linkSequence>6</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
       <positionX>167</positionX>
-      <positionY>229</positionY>
+      <positionY>228</positionY>
     </ProcessLinkBend>
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
-        <processId>RequisicaoDeMateriais</processId>
-        <version>2</version>
+        <processId>SolicitacaoDeCompras</processId>
+        <version>1</version>
         <linkSequence>10</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
