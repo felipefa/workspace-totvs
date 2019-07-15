@@ -22,11 +22,13 @@ var beforeSendValidate = function (numState, nextState) {
 				$('[id^=item___]').each(function (index) {
 					const item = $(this);
 					const posicaoPaiFilho = item.prop('id').split('___')[1];
+					const obs = $(`#obsItem___${posicaoPaiFilho}`).val();
 
 					itens.push({
 						'ITEM': index + 1 + '',
 						'PRODUTO': $(`#codItem___${posicaoPaiFilho}`).val(),
-						'QUANT': $(`#quantidade___${posicaoPaiFilho}`).val()
+						'QUANT': $(`#quantidade___${posicaoPaiFilho}`).val(),
+						'OBS': `Solicitação fluig ID: ${solicitacaoFluig} - Local da necessidade: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`
 					});
 				});
 
@@ -34,7 +36,6 @@ var beforeSendValidate = function (numState, nextState) {
 					'OBJETO': {
 						'CCUSTO': centroCusto,
 						'MOTIVO': dtNecessidade.split('-')[2] + '/' + dtNecessidade.split('-')[1] + '/' + dtNecessidade.split('-')[0],
-						'OBS': `Solicitação fluig ID: ${solicitacaoFluig} - Local da necessidade: ${localNecessidade} - Motivo: ${motivo}`,
 						'ITENS': itens
 					}
 				});
@@ -51,6 +52,7 @@ var beforeSendValidate = function (numState, nextState) {
 						message: dsWsProtheus.values[0].mensagem,
 						type: 'success'
 					});
+
 					return true;
 				} else if (dsWsProtheus != null) {
 					console.log('Erro ao cadastrar requisição de materiais no Protheus:', dsWsProtheus.values[0].mensagem);
@@ -61,6 +63,7 @@ var beforeSendValidate = function (numState, nextState) {
 					message: 'Erro ao cadastrar requisição de materiais no Protheus.',
 					type: 'warning'
 				});
+
 				return false;
 			}
 		} else if (!isEmpty(decisao)) {
@@ -72,6 +75,7 @@ var beforeSendValidate = function (numState, nextState) {
 					message: 'Preencha o motivo da decisão escolhida na aprovação.',
 					type: 'warning'
 				});
+
 				return false;
 			}
 
