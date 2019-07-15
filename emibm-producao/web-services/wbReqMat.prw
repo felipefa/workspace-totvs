@@ -864,3 +864,77 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLARMA
 	RestArea(aArea)
 Return(lRet)
 //Fim do Metodo POST do Web Service de Solicitacao ao Armazem
+
+
+/* ------------------------------------------------------------------------------------------- */
+/* ------------------------------- Solicitação de Compras ------------------------------------ */
+/* ------------------------------------------------------------------------------------------- */
+//Inicio da Declaracao do Web Service Solicitaco de Compra
+WSRESTFUL SOLCOMP DESCRIPTION "Servico REST para cadastro de Solicitacao de Compra"
+	WSDATA OBJETO As String
+
+	WSMETHOD POST DESCRIPTION "Cadastrar solicitacao de Compra" WSSYNTAX "/SOLCOMP"
+END WSRESTFUL
+//Fim da Declaracao do Web Service
+
+//Inicio do Metodo POST do Web Service de Solicitacao de compra
+WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
+	Local cJSON := Self:GetContent() // Pega a string do JSON
+	Local oParseJSON := Nil
+	Local aCab := {} //--> Array para ExecAuto do MATA0105
+	Local cJsonRet := ""
+	Local cArqLog := ""
+	Local cErro	:= ""
+	Local cCodSCP := ""
+	Local lRet := .T.
+	Local aArea := GetArea()
+	Local cCodResp := ""
+	local aItens := {}
+	local aAllItens := {}
+	Private lMsErroAuto := .F.
+
+	//Cria o diretorio para salvar os arquivos de log
+	If !ExistDir("\log_solcomp")
+		MakeDir("\log_solcomp")
+	EndIf
+
+	::SetContentType("application/json")
+	FWJsonDeserialize(cJson, @oParseJSON)
+	SC1->(DbSetOrder(3))
+
+	//Dado da solicitacao
+	Aadd(aCab, {"C1_EMISSAO", dDataBase})
+
+	//Monta itens da solicitacao
+	For nI := 1 to len(oParseJSON:OBJETO:ITENS)
+		aItens := {}
+		//Aadd(aItens,{"C1_DATPRF", CtoD(oParseJSON:OBJETO:MOTIVO), Nil})
+		Aadd(aItens,{"C1_ITEM", StrZero(nI, Len(SC1->C1_ITEM)), Nil})
+		Aadd(aItens,{"C1_PRODUTO", oParseJSON:OBJETO:ITENS[nI]:PRODUTO, Nil})
+		Aadd(aItens,{"C1_QUANT", oParseJSON:OBJETO:ITENS[nI]:OBS, Nil})
+		//Aadd(aItens,{"C1_OBS", DecodeUTF8(oParseJSON:OBJETO:ITENS[nI]:OBS, "cp1252"), Nil})
+		Aadd(aAllItens, aItens)
+	Next nI
+
+	MSExecAuto({|x,y| mata110(x,y)}, aCab, aAllItens)
+
+	If lMsErroAutoS
+		cArqLog := dDataBase + " - " + SubStr(Time(), 1, 5) + ".log"
+		RollBackSX8()
+		cErro := MostraErro("\log_solarm", cArqLog)
+		cErro := TrataErro(cErro)
+		SetRestFault(400, cErro)
+		lRet := .F.
+	Else
+		ConfirmSX8()
+		cJSONRet := '{"cod": "200"';
+				   + ', "sucesso":"TRUE"';
+				   + ', "msg":"Solicitação cadastrada com sucesso!"';
+				   + '}'
+
+		::SetResponse(cJSONRet)
+	EndIf
+
+	RestArea(aArea)
+Return(lRet)
+//Fim do Metodo POST do Web Service de Solicitacao de Compra
