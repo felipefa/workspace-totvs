@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="/portal/resources/style-guide/css/fluig-style-guide.min.css"/>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+	<script type="text/javascript" src="/portal/resources/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+	<script src="js/sum.js"></script>
+	<script src="js/scripts.js"></script>
+	<script src="js/moment.js"></script>
+	<script src="js/moment-precise-range.js"></script>
+</head>
+
+<style>
+
+/* Trata o espaçamento do icone da lixeira na tabela pai e filho */
+.bpm-mobile-trash-column{
+	width: 76px;
+}
+
+/* Alterar a cor da linha criada pela tag <hr> */
+hr{
+	border-top: 2px solid #DDD !important;
+}
+</style>
+
+<body>
+	<div class="fluig-style-guide">
+
+		<!-- CABEÇALHO -->
+		<div class="page-header">
+			<div class="row">
+				<div class="col-md-4" align="left">
+					<img src="/portal/resources/images/logo.png" alt="" width="140px">
+				</div>
+				<div class="col-md-4" align="center">
+					<h1>Gestão de Viagens</h1>
+				</div>
+				<div class="col-md-4">
+				</div>
+			</div>
+		</div>
+
+		<form name="form" role="form">
+			<input type="hidden" name="indexTmp" id="indexTmp">
+			<input type="hidden" name="codGestorAprov" id="codGestorAprov">
+			<input type="hidden" name="codFilial" id="codFilial">
+			<input type="hidden" name="nomeGestorAprov" id="nomeGestorAprov">
+
+
+			<!-- PAINEL 'DADOS DA SOLICITAÇÃO' -->
+			<div class="panel-group" id="accordionOne">
+				<div class="panel panel-default" id="painelDadosSolic">
+					<div class="panel-heading">
+			            <h5 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionOne" href="#collapseOne">Dados da Solicitação</a>
+			            </h5>
+			        </div>
+					<div id="collapseOne" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-9">
+									<label>Solicitante</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="nomeSolic" id="nomeSolic" readonly>
+									</div>
+								</div>
+								<div class="form-group col-md-3">
+									<label>Data da Solicitação</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataSolic" id="dataSolic" readonly>
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="form-group col-md-4">
+									<label>Tipo de Solicitação</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
+										<select class="form-control" id="tipoSolicitacao" name="tipoSolicitacao" onchange="selecionarTipoSolicitacao(this);">
+											<option value="">Selecione tipo solicitação..</option>
+											<option value="propria">Própria</option>
+											<option value="outroColobaborado">Outro Colaborador</option>
+											<option value="terceiros">Terceiros</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group col-md-4">
+									<label>Aprovador</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="aprovadorNome" id="aprovadorNome" readonly>
+									</div>
+									<input type="text" class="form-control hidden" name="aprovadorViagem" id="aprovadorViagem" readonly>
+								</div>
+								<div class="form-group col-md-4">
+									<label>Centro de Custo</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" id="aprovadorCentroDeCusto" name="aprovadorCentroDeCusto" readonly>
+									</div>
+								</div>
+							</div>
+
+							<div class="row" id="divColaboradorTerceiro" style="display: none;">
+								<div class="form-group col-md-6">
+									<label for="colaboradorNome">Nome</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="colaboradorNome" id="colaboradorNome" placeholder="Nome">
+									</div>
+								</div>
+								<div class="form-group col-md-3">
+									<label for="colaboradorCPF">CPF</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="colaboradorCPF" id="colaboradorCPF" mask="000.000.000-00" placeholder="000.000.000-00">
+									</div>
+								</div>
+
+								<div class="form-group col-md-3">
+									<label for="colaboradorRG">RG</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="colaboradorRG" id="colaboradorRG" placeholder="RG">
+									</div>
+								</div>
+
+							</div>
+
+							<div class="row" id="divOutroColaborador" style="display: none;">
+								<div class="form-group col-xs-12 col-md-12">
+									<input type="text" class="hidden" id="colaboradorMatricula" name="colaboradorMatricula" />
+									<label>Colaborador *</label>
+									<input class="form-control" type="zoom" id="zoomColaborador" name="zoomColaborador" required
+										data-zoom="{
+											'displayKey':'colleagueName',
+											'datasetId':'colleague',
+											'placeholder':'Escolha o Colaborador',
+											'fields':[
+												{
+													'field':'colleagueName',
+													'label':'Nome',
+													'standard':'true'
+												},
+												{
+													'field':'colleagueId',
+													'label':'Código',
+													'visible':'false'
+												}
+											]
+										}"
+									/>
+								</div>
+							</div>
+
+							<div class="row" id="divDadosAprovador" style="display: none;">
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-6">
+										<label>Unidade</label>
+											<input class="hidden" type="text" id="unidadeFilialCodigo" name="unidadeFilialCodigo" />
+											<input class="form-control" type="zoom" id="unidadeFilial" name="unidadeFilial"
+												data-zoom="{
+													'displayKey':'empresaNome',
+													'datasetId':'fsUnidadeCentroCusto',
+													'placeholder':'Selecione a unidade',
+													'fields':[
+														{
+															'field':'empresaCodigo',
+															'label':'Código'
+														},
+														{
+															'field':'empresaNome',
+															'label':'Descrição',
+															'standard':'true'
+														}
+													]
+												}"
+											/>
+											<!-- <input
+												type="zoom"
+												id="unidadeFilial"
+												name="unidadeFilial"
+												data-zoom="{
+					                            	'displayKey':'filial',
+					                            	'datasetId':'ds_CadastroCentroCustoFilial',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione a unidade',
+					                           		'fields':[
+					                                	{
+					                                		'field':'codigoFilial',
+					                                		'label':'Código Filial'
+					                                	},
+														{
+					                                		'field':'filial',
+					                                		'label':'Filial',
+															'standard':'true'
+					                                	}
+					                            	]
+					                        	}"
+						                     /> -->
+										</div>
+									</div>
+								</div>
+
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-6">
+											<label>Centro de Custo</label>
+											<input class="hidden" type="text" id="centroCustoFilialCodigo" name="centroCustoFilialCodigo" />
+											<input class="form-control" type="zoom" id="centroCustoFilial" name="centroCustoFilial"
+												data-zoom="{
+													'displayKey':'centroDeCustoDescricao',
+													'datasetId':'datasetCentroDeCusto',
+													'placeholder':'Selecione o centro de custo',
+													'fields':[
+														{
+															'field':'centroDeCustoCodigo',
+															'label':'Codigo'
+														},
+														{
+															'field':'centroDeCustoDescricao',
+															'label':'Descrição',
+															'standard':'true'
+														}
+													]
+												}"
+											/>
+											<!-- <input
+												type="zoom"
+												id="centroCustoFilial"
+												name="centroCustoFilial"
+												data-zoom="{
+					                            	'displayKey':'centroCusto',
+					                            	'datasetId':'paiFilhoFormularios',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione o centro de custo',
+													'filterValues':'datasetName,ds_CadastroCentroCustoFilial,dataTable,tbCentroCustoAprovador',
+					                           		'fields':[
+														{
+					                                		'field':'gestorCentro',
+					                                		'label':'Gestor'
+					                                	},
+														{
+					                                		'field':'centroCusto',
+					                                		'label':'Centro de Custo'
+					                                	}
+					                            	]
+					                        	}"
+						                     /> -->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL 'DADOS DA VIAGEM' -->
+			<div class="panel-group" id="accordionTwo" style="display: none;">
+				<div class="panel panel-default" id="painelDadosViagem">
+					<div class="panel-heading">
+			            <h5 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseTwo">Dados da Viagem</a>
+			            </h5>
+			        </div>
+			        <div id="collapseTwo" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-2">
+									<label>Data Saída</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataIda" id="dataIda" placeholder="___/___/___"
+											onblur="calculeDiaria();">
+									</div>
+								</div>
+								<div class="form-group col-md-2">
+									<label>Hora Saída</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-time"></span></span>
+										<input type="time" class="form-control" name="horaChegada" id="horaChegada" onblur="calculeDiaria();">
+									</div>
+								</div>
+								<div class="form-group col-md-2">
+								</div>
+								<div class="form-group col-md-2">
+									<label>Data Retorno</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataVolta" id="dataVolta" placeholder="___/___/___"
+											onblur="calculeDiaria();">
+									</div>
+								</div>
+								<div class="form-group col-md-2">
+									<label>Hora Retorno</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-time"></span></span>
+										<input type="time" class="form-control" name="horaRetorno" id="horaRetorno" onblur="calculeDiaria();">
+									</div>
+								</div>
+								<div class="form-group col-md-2">
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-2">
+											<label>UF de Saída</label>
+											<input
+												type="zoom"
+												id="zoomUFPartida"
+												name="zoomUFPartida"
+												data-zoom="{
+					                            	'displayKey':'sigla',
+					                            	'datasetId':'dsConsultaUFIBGE',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione o UF',
+					                           		'fields':[
+					                                	{
+					                                		'field':'sigla',
+					                                		'label':'UF'
+					                                	}
+					                            	]
+					                        	}"
+						                     />
+										</div>
+									</div>
+								</div>
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-4">
+											<label>Município de Saída</label>
+											<input
+												type="zoom"
+												id="zoomMunSaida"
+												name="zoomMunSaida"
+												data-zoom="{
+					                            	'displayKey':'nome',
+					                            	'datasetId':'dsConsultaMunicipioIBGE',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione o Município',
+					                           		'fields':[
+					                                	{
+					                                		'field':'nome',
+					                                		'label':'Municipio'
+					                                	}
+					                            	]
+					                        	}"
+						                     />
+										</div>
+									</div>
+								</div>
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-2">
+											<label>UF de Chegada</label>
+											<input
+												type="zoom"
+												id="zoomUFChegada"
+												name="zoomUFChegada"
+												data-zoom="{
+					                            	'displayKey':'sigla',
+					                            	'datasetId':'dsConsultaUFIBGE',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione o UF',
+					                           		'fields':[
+					                                	{
+					                                		'field':'sigla',
+					                                		'label':'UF'
+					                                	}
+					                            	]
+					                        	}"
+						                     />
+										</div>
+									</div>
+								</div>
+
+								<div class="form-field">
+									<div class="form-input">
+										<div class="form-group col-xs-12 col-md-4">
+											<label>Município de Chegada</label>
+											<input
+												type="zoom"
+												id="zoomMunChegada"
+												name="zoomMunChegada"
+												data-zoom="{
+					                            	'displayKey':'nome',
+					                            	'datasetId':'dsConsultaMunicipioIBGE',
+					                            	'maximumSelectionLength':'1',
+					                            	'placeholder':'Selecione o Município',
+					                           		'fields':[
+					                                	{
+					                                		'field':'nome',
+					                                		'label':'Municipio'
+					                                	}
+					                            	]
+					                        	}"
+						                     />
+										</div>
+									</div>
+								</div>
+							</div><br>
+							<div class="row">
+								<div class="form-input">
+									<div class="form-group col-md-3">
+									    <label class="checkbox-inline">
+									     	<input type="checkbox" name="checkboxCarro" id="checkboxCarro" value="carroOk">
+									     	Necessita de carro no local?
+									    </label>
+									</div>
+									<div class="form-group col-md-3">
+									    <label class="checkbox-inline">
+									      	<input type="checkbox" name="checkboxHotel" id="checkboxHotel" value="hotelOk">
+									      	Necessita de hotel?
+									    </label>
+									</div>
+									<div class="form-group col-md-3" id="divCheckboxAdian">
+									    <label class="checkbox-inline">
+									    	<input type="hidden" id="idCheckboxAdian" name="idCheckboxAdian" value='N'>
+									      	<input type="checkbox" name="checkboxAdian" id="checkboxAdian" value="adiantamentoOk">
+									      	Necessita de adiantamento?
+									    </label>
+									</div>
+								</div>
+							</div>
+							<div class="row" id="idValorDesejado" style="display: none">
+								<div class="form-input">
+									<div class="form-group col-md-3">
+										<label for="bancoDescricao">Banco</label>
+										<div class="input-group">
+											<span class="input-group-addon"><span class="fluigicon fluigicon-user-cost"></span></span>
+											<input type="text" class="form-control" name="bancoDescricao" id="bancoDescricao" placeholder="Digite o banco">
+										</div>
+									</div>
+									<div class="form-group col-md-3">
+										<label for="bancoContaCorrente">Conta Corrente</label>
+										<div class="input-group">
+											<span class="input-group-addon"><span class="fluigicon fluigicon-user-cost"></span></span>
+											<input type="text" class="form-control" name="bancoContaCorrente" id="bancoContaCorrente" placeholder="Digite a conta corrente">
+										</div>
+									</div>
+									<div class="form-group col-md-3">
+										<label for="bancoAgencia">Agência</label>
+										<div class="input-group">
+											<span class="input-group-addon"><span class="fluigicon fluigicon-user-cost"></span></span>
+											<input type="text" class="form-control" name="bancoAgencia" id="bancoAgencia" placeholder="Digite a agência">
+										</div>
+									</div>
+									<div class="form-group col-md-3">
+										<label for="valorDesejado">Valor</label>
+										<div class="input-group">
+											<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+											<input type="text" class="form-control" name="valorDesejado" id="valorDesejado" placeholder="Digite apenas números" onkeypress="mascaraMoeda(this, valorMask);" onchange="fillAcerto();">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-input">
+									<div class="form-group col-md-3" id="idRadioMeioTransp" name="idRadioMeioTransp">
+										<label>Meio de transporte até o local:</label><br>
+										<label class="radio-inline" ondblclick="dblclickRadioMeioTransp()">
+											<input type="radio" value="onibus" name="radioMeioTransp" id="radioOnibus">Ônibus
+										</label>
+										<label class="radio-inline" ondblclick="dblclickRadioMeioTransp()">
+											<input type="radio" value="aereo" name="radioMeioTransp" id="radioAereo">Aéreo
+										</label>
+										<label class="radio-inline" ondblclick="dblclickRadioMeioTransp()">
+											<input type="radio" value="carro" name="radioMeioTransp" id="radioCarro">Carro
+										</label>
+									</div>
+									<div class="form-group col-md-3" id="idRadioOpcaoCarro" name="idRadioOpcaoCarro" style="display: none">
+										<label>Escolha uma opção para o carro:</label><br>
+										<label class="radio-inline">
+											<input type="radio" value="alugado" name="radioCarros" id="radioCarroAlugado"/>Alugado
+										</label>
+										<label class="radio-inline">
+											<input type="radio" value="frota" name="radioCarros" id="radioCarroFrota" />Frota
+										</label>
+										<label class="radio-inline">
+											<input type="radio" value="colaborador" name="radioCarros" id="radioCarroColabor"/>Colaborador
+										</label>
+									</div>
+									<div class="form-group col-md-3"></div>
+									<div class="form-group col-md-3"></div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="form-group col-md-3"></div>
+
+								<div class="form-group col-md-2" id="idDataRetirada" name="idDataRetirada" style="display: none">
+									<label>Data Retirada</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataRetirada" onblur="calculeDiferencaDatas('Retirada')" id="dataRetirada" placeholder="___/___/___">
+									</div>
+								</div>
+
+								<div class="form-group col-md-2" id="idHoraRetirada" name="idHoraRetirada" style="display: none">
+									<label>Hora Retirada</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-time"></span></span>
+										<input type="time" class="form-control" name="horaRetirada" onblur="calculeDiferencaDatas('Retirada')" id="horaRetirada">
+									</div>
+								</div>
+
+								<div class="form-group col-md-2" id="idDataDevolucao" name="idDataDevolucao" style="display: none">
+									<label>Data Devolução</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataDevolucao" onblur="calculeDiferencaDatas('Devolucao')" id="dataDevolucao" placeholder="___/___/___">
+									</div>
+								</div>
+
+								<div class="form-group col-md-2" id="idHoraDevolucao" name="idHoraDevolucao" style="display: none">
+									<label>Hora Devolução</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-time"></span></span>
+										<input type="time" class="form-control" onblur="calculeDiferencaDatas('Devolucao')" name="horaDevolucao" id="horaDevolucao">
+									</div>
+								</div>
+
+								<div class="form-group col-md-1"></div>
+
+							</div>
+
+							<div class="row">
+								<div class="form-group col-md-12">
+									<label>Observações</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
+										<textarea rows="2" class="form-control" name="obsSolicitante" id="obsSolicitante"></textarea>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL DE APROVAÇÃO 'APROVAR VIAGEM' -->
+			<div class="panel-group" id="accordionThree">
+				<div class="panel panel-default aprovViagem" id="painelAprovViagem">
+					<div class="panel-heading">
+			            <h5 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionThree" href="#collapseThree">Aprovar Viagem</a>
+			            </h5>
+			        </div>
+					<div id="collapseThree" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Data da Aprovação</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataAprov" id="dataAprov" readonly>
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Nome do Aprovador</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="nomeAprov" id="nomeAprov" readonly>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Aprovação</label>
+									<div class="input-group">
+										<input type="radio" id="radioAprov" name="radioAprov" value="Sim"/> Sim<br>
+										<input type="radio" id="radioAprov" name="radioAprov" value="Nao"/> Não<br>
+										<input type="radio" id="radioAprovR" name="radioAprov" value="Revisar"/> Revisar
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Observações</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
+										<textarea rows="2" class="form-control" name="obsAprov" id="obsAprov"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL DE APROVAÇÃO 'APROVAR COTAÇÃO' -->
+			<div class="panel-group" id="accordionNine" hidden>
+				<div class="panel panel-default aprovCotacao" id="painelAprovCotacao">
+					<div class="panel-heading">
+			            <h5 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionNine" href="#collapseNine">Aprovar Cotação</a>
+			            </h5>
+			        </div>
+					<div id="collapseNine" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Data da Aprovação</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataAprovCotacao" id="dataAprovCotacao" readonly>
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Nome do Aprovador</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="nomeAprovCotacao" id="nomeAprovCotacao" readonly>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Aprovação</label>
+									<div class="input-group">
+										<input type="radio" id="radioAprovCotacao" name="radioAprovCotacao" value="Sim"/> Sim<br>
+										<input type="radio" id="radioAprovCotacao" name="radioAprovCotacao" value="Nao"/> Não<br>
+										<input type="radio" id="radioAprovCotacaoR" name="radioAprovCotacao" value="Revisar"/> Revisar
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Observações</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
+										<textarea rows="2" class="form-control" name="obsAprovCotacao" id="obsAprovCotacao"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL 'OBSERVAÇÕES (RESERVAR VIAGEM)' -->
+			<div class="panel-group" id="accordionFour">
+				<div class="panel panel-default" id="painelObsReserva">
+					<div class="panel-heading">
+			            <h6 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionFour" href="#collapseFour">
+			                Observações (Reservar Viagem)
+			            	</a>
+			            </h6>
+			        </div>
+			        <div id="collapseFour" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-12">
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment-on"></span></span>
+										<textarea rows="3" class="form-control" name="obsReserva" id="obsReserva"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL 'OBSERVAÇÕES (LIBERAR ADIANTAMENTO)' -->
+			<div class="panel-group" id="accordionFive">
+				<div class="panel panel-default" id="painelObsAdiant">
+					<div class="panel-heading">
+			            <h6 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionFive" href="#collapseFive">
+			                Observações (Liberar Adiantamento)
+			            	</a>
+			            </h6>
+			        </div>
+			        <div id="collapseFive" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-12">
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment-on"></span></span>
+										<textarea rows="3" class="form-control" name="obsAdiant" id="obsAdiant"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL 'OBSERVAÇÕES (LIBERAR VEICULO)' -->
+			<div class="panel-group" id="accordionSix">
+				<div class="panel panel-default" id="painelObsVeiculo">
+					<div class="panel-heading">
+			            <h6 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionSix" href="#collapseSix">
+			                Observações (Liberar Veiculo)
+			            	</a>
+			            </h6>
+			        </div>
+			        <div id="collapseSix" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-12">
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment-on"></span></span>
+										<textarea rows="3" class="form-control" name="obsVeiculo" id="obsVeiculo"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL DE 'ACERTO/REEMBOLSO FINANCEIRO' -->
+			<div class="panel-group" id="accordionSeven">
+				<div class="panel panel-default" id="painelAcertoReemb">
+					<div class="panel-heading">
+			            <h6 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionSeven" href="#collapseSeven">
+			                Acerto/Reembolso Financeiro
+			            </a>
+			            </h6>
+			        </div>
+					<div id="collapseSeven" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<table tablename="adicionarDespesa" noaddbutton='true' class="table" id="tableItens" customFnDelete="delDespesa(this)">
+								<thead>
+									<tr class="tableHeadRow">
+										<th class="tableColumn"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="fs-v-align-middle">
+											<div class="row">
+												<div class="form-group col-md-2">
+													<label>Data</label>
+													<div class="input-group date">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+														<input type="text" class="form-control" data-date="" name="dataReembolso" id="dataReembolso" placeholder="___/___/___">
+													</div>
+												</div>
+												<div class="form-group col-md-3">
+													<label>Tipo de Despesa</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
+														<select class="form-control" id="tipoDespesa" name="tipoDespesa" onchange="ativarDesativarCampos(this); fillAcerto();">
+															<option value="">Selecione uma opção..</option>
+															<option value="alimentacao">Alimentação</option>
+															<option value="combustivel">Combustível</option>
+															<option value="estacionamento">Estacionamento</option>
+															<!--<option value="total">Despesa Total</option>-->
+															<option value="km">KM</option>
+															<option value="outros">Outros</option>
+															<option value="reembolso">Reembolso</option>
+														</select>
+													</div>
+												</div>
+												<div class="form-group col-md-3" id="idValorDespesa" name="idValorDespesa">
+													<label>Valor da Despesa</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+														<input type="text" class="form-control" name="valorDespesa" id="valorDespesa" placeholder="Digite apenas números"
+															onchange="valorTotal(); fillAcerto();" onkeypress="mascaraMoeda(this, valorMask);">
+													</div>
+												</div>
+
+												<div class="form-group col-md-2" id="idProcurarComprovante" name="idProcurarComprovante">
+													<label>Comprovante</label><br>
+													<button type="button" class="btn btn-primary" name="procurarComprovante" id="procurarComprovante"
+															onclick="comprovanteAlimentacao(this)">Procurar Arquivo(s)</button>
+												</div>
+
+												<div class="form-group col-md-2" id="idValorLiberado" name="idValorLiberado">
+													<label>Valor Liberado</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+														<input type="text" class="form-control" name="valorLiberado" id="valorLiberado" readonly="readonly" onkeypress="mascaraMoeda(this, valorMask);" onchange="liberarValor();">
+													</div>
+												</div>
+
+
+
+											</div>
+											<div class="row">
+												<div class="form-group col-md-2" id="idKMInicial" name="idKMInicial" style="display: none">
+													<label>KM Inicial</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-map-marker"></span></span>
+														<input type="number" class="form-control" name="kmInicial" id="kmInicial" placeholder="Digite apenas números"
+															onchange="resultadoKM(this); totalKmRodado(); fillAcerto();">
+													</div>
+												</div>
+												<div class="form-group col-md-2" id="idFotoInicial" name="idFotoInicial" style="display: none">
+													<label>Foto KM Inicial</label><br>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-picture"></span></span>
+														<button type="button" class="btn btn-default" name="fotoInicial" id="fotoInicial"
+															onclick="comprovanteKMInicial(this)">Procurar Foto</button>
+													</div>
+												</div>
+												<div class="form-group col-md-2" id="idKMFinal" name="idKMFinal" style="display: none">
+													<label>KM Final</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-map-marker"></span></span>
+														<input type="number" class="form-control" name="kmFinal" id="kmFinal" placeholder="Digite apenas números"
+															onchange="resultadoKM(this); totalKmRodado(); fillAcerto();">
+													</div>
+												</div>
+												<div class="form-group col-md-2" id="idFotoFinal" name="idFotoFinal" style="display: none">
+													<label>Foto KM Final</label><br>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-picture"></span></span>
+														<button type="button" class="btn btn-default" name="fotoFinal" id="fotoFinal"
+															onclick="comprovanteKMFinal(this);">Procurar Foto</button>
+													</div>
+												</div>
+												<div class="form-group col-md-2" id="idTotalKM" name="idTotalKM" style="display: none">
+													<label>Total KM Percorrido</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-pen"></span></span>
+														<input type="text" class="form-control" name="totalKM" id="totalKM" readonly="readonly" onchange="valorTotalPorKM(this)">
+													</div>
+												</div>
+												<div class="form-group col-md-2" id="idLiberadoKM" name="idLiberadoKM" style="display: none">
+													<label>Valor Total por KM</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-pen"></span></span>
+														<input type="text" class="form-control" name="liberadoKM" id="liberadoKM" readonly="readonly" onchange="totalLiberadoKm();">
+													</div>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<hr>
+							<div class="row">
+								<div class="form-group col-xs-12 col-md-3">
+									<button type="button" name="buttonAddDespesa" id="buttonAddDespesa" class="btn btn-primary divhide col-md-11"
+											onclick="addDespesa(); loadDefault();">Adicionar Despesa</button>
+								</div>
+								<div class="form-group col-xs-12 col-md-3">
+									<button type="button" class="btn btn-primary col-md-11" name="buttonViewRemove" id="buttonViewRemove"
+											onclick="btnViewDocuments(this.id);">Visualizar/Remover Anexos</button>
+								</div>
+								<div class="form-group col-xs-12 col-md-3"></div>
+								<div class="form-group col-xs-12 col-md-3"></div>
+							</div>
+							<br>
+							<div class="panel panel-default">
+								<div class="panel-heading">Totais</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="form-group col-md-4 hidden">
+											<label>Quantidade de Despesas</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-pen"></span></span>
+												<input type="text" class="form-control" name="qtDespesas" id="qtDespesas" readonly="readonly">
+
+											</div>
+										</div>
+										<div class="form-group col-md-4">
+											<label>Total Valor Despesa</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+												<input type="text" class="form-control" name="totalSol" id="totalSol" readonly="readonly">
+											</div>
+										</div>
+										<div class="form-group col-md-4">
+											<label>Total Liberado</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+												<input type="text" class="form-control" name="totalLib" id="totalLib" readonly="readonly">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-4">
+											<label for="valorSolicitado">Valor Solicitado</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+												<input type="text" class="form-control" name="valorSolicitado" id="valorSolicitado" readonly>
+											</div>
+										</div>
+										<div class="form-group col-md-4">
+											<label for="totalGasto">Total Gasto</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+												<input type="text" class="form-control" name="totalGasto" id="totalGasto" readonly>
+											</div>
+										</div>
+										<div class="form-group col-md-4" hidden>
+											<label for="saldo">Saldo</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-money"></span></span>
+												<input type="text" class="form-control" name="saldo" id="saldo" readonly>
+											</div>
+										</div>
+									</div>
+									<div class="row hidden">
+										<div class="form-group col-md-4"></div>
+										<div class="form-group col-md-4 hidden" id="idKmRodado" name ="idKmRodado">
+											<label>Total KM Percorrido</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-pen"></span></span>
+												<input type="text" class="form-control" name="kmRodado" id="kmRodado" readonly="readonly">
+											</div>
+										</div>
+										<div class="form-group col-md-4 hidden" id="idKmLiberado" name="idKmLiberado">
+											<label>Total KM Liberado</label>
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fluigicon fluigicon-pen"></span></span>
+												<input type="text" class="form-control" name="kmLiberado" id="kmLiberado" readonly="readonly">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div><br>
+							<div class="row">
+								<div class="form-group col-md-3" id="idFimViagem">
+									<label>Fim da Viagem?</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
+										<select class="form-control" id="fimViagem" name="fimViagem">
+											<option value="">Selecione uma opção..</option>
+											<option value="Sim">Sim</option>
+											<option value="Nao">Não</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group col-md-3" id="idReembEfe">
+									<label>Reembolso Efetuado?</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
+										<select class="form-control" id="ReembEfe" name="ReembEfe">
+											<option value="">Selecione uma opção..</option>
+											<option value="Sim">Sim</option>
+											<option value="Nao">Não</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group col-md-3" id="idBaixaFin">
+									<label>Baixa Financeira Efetuada?</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
+										<select class="form-control" id="BaixaFin" name="BaixaFin">
+											<option value="">Selecione uma opção..</option>
+											<option value="Sim">Sim</option>
+											<option value="Nao">Não</option>
+										</select>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- PAINEL DE APROVAÇÃO 'REEMBOLSO/BAIXA FINANCEIRA' -->
+			<div class="panel-group" id="accordionEight">
+				<div class="panel panel-default aprovReembClass" id="painelAprovReemb">
+					<div class="panel-heading">
+			            <h5 class="panel-title">
+			                <a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionEight" href="#collapseEight">
+			                Aprovar Reembolso/Baixa Financeira</a>
+			            </h5>
+			        </div>
+					<div id="collapseEight" class="panel-collapse collapse in">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Data da Aprovação</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
+										<input type="text" class="form-control" name="dataAprovReemb" id="dataAprovReemb" readonly>
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Nome do Aprovador</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
+										<input type="text" class="form-control" name="nomeAprovReemb" id="nomeAprovReemb" readonly>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Aprovação</label>
+									<div class="input-group" id="idRadioAprovReemb">
+										<input type="radio" id="radioAprovReemb" name="radioAprovReemb" value="Sim"/> Aprovado<br>
+										<input type="radio" id="radioAprovReembReS" name="radioAprovReemb" value="RevisarS"/> Revisão Solicitante<br>
+										<input type="radio" id="radioAprovReemb" name="radioAprovReemb" value="RevisarF"/> Revisão Financeira
+									</div>
+								</div>
+								<div class="form-group col-md-9">
+									<label>Observações</label>
+									<div class="input-group">
+										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
+										<textarea rows="2" class="form-control" name="obsAprovReemb" id="obsAprovReemb"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<html>
+
+<head>
+	<link href="/portal/resources/style-guide/css/fluig-style-guide-flat.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+	<script src="/portal/resources/js/mustache/mustache-min.js"></script>
+	<script type="text/javascript" src="/portal/resources/style-guide/js/fluig-style-guide.min.js"
+		charset="utf-8"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+</head>
+
+<body>
+	<div class="fluig-style-guide">
+		<form name="form" role="form">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<span class="fluigicon fluigicon-info-sign fluigicon-md"></span>
+						Gestão de Hierarquias
+					</h3>
+				</div>
+				<div class="panel-body">
+
+					<div class="form-group fs-clearfix">
+						<div class="form-group col-xs-3 col-md-3">
+							<input type="text" class="hidden" id="processId" name="processId" />
+							<label>Processo</label>
+							<input type="zoom" id="zoomProcesso" name="zoomProcesso" data-zoom="{
+									'displayKey':'processDescription',
+									'datasetId':'processDefinition',
+									'placeholder':'Escolha o Processo',
+									'filterValues':'active,true,complementsLevel,1',
+									'fields':[
+										{
+											'field':'processDescription',
+											'label':'Processo',
+											'standard':'true'
+										},
+										{
+											'field':'processId',
+											'label':'Código',
+											'visible':'false'
+										}
+									]
+								}" />
+						</div>
+
+						<div class="form-group col-xs-3 col-md-3 col-sm-3">
+							<input type="text" class="hidden" id="empresaCodigo" name="empresaCodigo" />
+							<label>Unidade</label>
+							<input class="form-control" type="zoom" id="zoomUnidade" name="zoomUnidade" data-zoom="{
+									'displayKey':'empresaNome',
+									'datasetId':'fsUnidadeCentroCusto',
+									'placeholder':'Selecione a unidade',
+									'fields':[
+										{
+											'field':'empresaCodigo', 
+											'label':'Código'
+										},
+										{
+											'field':'empresaNome', 
+											'label':'Descrição',
+											'standard':'true'
+										}
+									]
+								}" />
+						</div>
+
+						<div class="form-group col-xs-3 col-md-3 col-sm-3">
+							<input type="text" class="hidden" id="centroDeCustoCodigo" name="centroDeCustoCodigo" />
+							<label>Centro de Custo</label>
+							<input class="form-control" type="zoom" id="zoomCentroDeCusto" name="zoomCentroDeCusto"
+								data-zoom="{
+									'displayKey':'centroDeCustoDescricao',
+									'datasetId':'datasetCentroDeCusto',
+									'placeholder':'Selecione o centro de custo',
+									'fields':[
+										{
+											'field':'centroDeCustoCodigo', 
+											'label':'Codigo'
+										},
+										{
+											'field':'centroDeCustoDescricao', 
+											'label':'Descrição',
+											'standard':'true'
+										}
+									]
+								}" />
+						</div>
+
+						<div class="form-group col-xs-3 col-md-3">
+							<label for="grupoHierarquico">Grupo Hierárquico</label>
+							<input type="text" id="grupoHierarquico" name="grupoHierarquico" class="form-control"
+								onblur="populaTabelaFilhoComDadosPai();" readonly>
+						</div>
+					</div>
+
+					<div class="form-group fs-clearfix col-xs-12 col-md-12">
+						<table class="table table-hover table-striped" tablename="tabelaGestaoHierarquia"
+							id="tabelaGestaoHierarquia" name="tabelaGestaoHierarquia" noaddbutton="true">
+							<thead>
+								<tr class="tableHeadRow">
+									<th class="tableColumn"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<input type="text" class="hidden" id="processoHierarquia"
+											name="processoHierarquia" />
+										<input type="text" class="hidden" id="unidadeFilialHierarquia"
+											name="unidadeFilialHierarquia" />
+										<input type="text" class="hidden" id="centroCustoHierarquia"
+											name="centroCustoHierarquia" />
+										<input type="text" class="hidden" id="grupoHierarquicoHierarquia"
+											name="grupoHierarquicoHierarquia" />
+										<input type="text" class="hidden" id="colaboradorEmail" name="colaboradorEmail">
+										<div class="form-group col-xs-4 col-md-4 col-sm-4">
+											<input type="text" class="hidden" id="colaboradorMatricula"
+												name="colaboradorMatricula" />
+											<label>Colaborador *</label>
+											<input class="form-control" type="zoom" id="zoomColaborador"
+												name="zoomColaborador" required data-zoom="{
+													'displayKey':'colleagueName',
+													'datasetId':'colleague',
+													'placeholder':'Escolha o Colaborador',
+													'fields':[
+														{
+															'field':'colleagueName',
+															'label':'Nome',
+															'standard':'true'
+														},
+														{
+															'field':'colleagueId',
+															'label':'Código',
+															'visible':'false'
+														},
+														{
+															'field':'mail',
+															'label':'E-mail',
+															'visible':'false'
+														}
+													]
+												}" />
+										</div>
+										<div class="form-group col-xs-1 col-md-1 col-sm-1">
+											<label for="colaboradorNivel">Nível *</label>
+											<input type="number" id="colaboradorNivel" name="colaboradorNivel"
+												class="form-control" required>
+										</div>
+										<div class="form-group col-xs-1 col-md-1 col-sm-1">
+											<div class="">
+												<label for="colaboradorAtivo">Ativo?</label><br />
+												<input type="checkbox" id="colaboradorAtivo" name="colaboradorAtivo">
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="form-group fs-clearfix">
+						<div class="form-group col-xs-12 col-md-12">
+							<button type="button" class="btn btn-primary btn-block"
+								id="btnAdicionarColaborador">Adicionar Colaborador</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</form>
+	</div>
+	<script type="text/javascript" src="js/custom.js"></script>
+
+</body>
+
+</html>
