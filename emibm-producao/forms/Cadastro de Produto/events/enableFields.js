@@ -5,6 +5,9 @@ function enableFields(form) {
     if (atividade == 0 || atividade == 4) {
         // PAINEL 'APROVAÇÃO'
         form.setEnabled('decisao', false);
+        form.setEnabled('armazem', false);
+        form.setEnabled('posIpiNcm', false);
+        form.setEnabled('origem', false);
         form.setEnabled('obsAprov', false);
     }
 
@@ -19,8 +22,5 @@ function enableFields(form) {
         form.setEnabled('tipo', false);
         form.setEnabled('descricao', false);
         form.setEnabled('unMedida', false);
-        form.setEnabled('armazem', false);
-        form.setEnabled('posIpiNcm', false);
-        form.setEnabled('origem', false);
     }
 }

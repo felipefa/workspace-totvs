@@ -43,6 +43,7 @@ var beforeSendValidate = function (numState, nextState) {
 						message: dsWsProtheus.values[0].mensagem,
 						type: 'success'
 					});
+
 					return true;
 				} else if (dsWsProtheus != null) {
 					console.log('Erro ao cadastrar produto no Protheus:', dsWsProtheus.values[0].mensagem);
@@ -60,11 +61,14 @@ var beforeSendValidate = function (numState, nextState) {
 			const obsAprov = document.getElementById('obsAprov').value;
 
 			if (obsAprov == '' || obsAprov == null) {
+				const mensagem = MOBILE != null && MOBILE ? 'Preencha a observação da aprovação.' : 'Preencha o motivo da decisão escolhida na aprovação.';
+
 				FLUIGC.toast({
 					title: 'Atenção!',
-					message: 'Preencha o motivo da decisão escolhida na aprovação.',
+					message: mensagem,
 					type: 'warning'
 				});
+
 				return false;
 			}
 

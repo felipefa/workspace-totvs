@@ -18,12 +18,6 @@ function validateForm(form) {
 			msg += '<br/>Informe a descrição do produto';
 		if (form.getValue('unMedida') == null)
 			msg += '<br/>Informe a unidade de medida do produto';
-		if (form.getValue('armazem') == null)
-			msg += '<br/>Informe o armazém do produto';
-		if (form.getValue('posIpiNcm') == null)
-			msg += '<br/>Informe o pos. IPI/NCM';
-		if (form.getValue('origem') == null)
-			msg += '<br/>Informe a origem';
 	}
 
 	// ATIVIDADE APROVAR REQUISIÇÃO
@@ -31,8 +25,16 @@ function validateForm(form) {
 		// PAINEL 'APROVAÇÃO'
 		if (form.getValue('decisao') == '' || form.getValue('decisao') == null)
 			msg += '<br/>Informe a decisão';
-		else if (form.getValue('decisao') != 'Aprovado' && form.getValue('obsAprov') == '')
-			msg += '<br/>Informe a observação da decisão';
+		else {
+			if (form.getValue('armazem') == null)
+				msg += '<br/>Informe o armazém do produto';
+			if (form.getValue('posIpiNcm') == null)
+				msg += '<br/>Informe o pos. IPI/NCM';
+			if (form.getValue('origem') == null)
+				msg += '<br/>Informe a origem';
+			if (form.getValue('decisao') != 'Aprovado' && form.getValue('obsAprov') == '')
+				msg += '<br/>Informe a observação da decisão';
+		}
 	}
 
 	if (msg != '')
