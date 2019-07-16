@@ -1,3 +1,49 @@
+/**
+ * @authors Autímio e Felipe Araujo
+ *
+ * dsWsProtheus
+ *
+ * Constraints:
+ * - Obrigatoriamente deve ser informado pelo menos o endpoint de consulta ao Protheus.
+ * - Caso o tipo de requisição não seja informado, o seu valor padrão será GET.
+ * - O código deve ser informado apenas para a consulta de um produto específico.
+ * - Os dados devem ser informados de acordo com seu endpoint e o tipo de requisição deve ser POST.
+ * - Para o cadastro de produto, espera-se um objeto da seguinte forma:
+ * 	{
+ * 		'PRODUTO': {
+ * 			'GRUPO':'0008',
+ * 			'TIPO':'EM',
+ * 			'DESC':'PRODUTO DE TESTE',
+ * 			'UM':'CX',
+ * 			'LOCPAD':'01',
+ * 			'IPINCM':'62043200',
+ * 			'ORIGEM':'0'
+ * 		}
+ * 	}
+ *
+ * - Para o cadastro de solicitação de compras, espera-se um objeto da seguinte forma:
+ * 	{
+ * 		'OBJETO': {
+ * 			'CCUSTO':'700115',
+ * 			'MOTIVO':'16/07/2019',
+ * 			'ITENS': [
+ * 				{
+ * 					'ITEM':'1',
+ *	 				'PRODUTO':'002',
+ * 					'QUANT':'5',
+ * 					'OBS':'Solicitação fluig ID: 15 - Local da necessidade: Unidade Goiânia - Motivo: Motivo da solicitação de compras - Obs.: Observação do item 1 a ser comprado'
+ * 				},
+ * 				{
+ * 					'ITEM':'2',
+ *	 				'PRODUTO':'254',
+ * 					'QUANT':'42',
+ * 					'OBS':'Solicitação fluig ID: 15 - Local da necessidade: Unidade Goiânia - Motivo: Motivo da solicitação de compras - Obs.: Observação do item 2 a ser comprado'
+ * 				}
+ * 			]
+ * 		}
+ * 	}
+ *
+ */
 function createDataset(fields, constraints, sortFields) {
 	try {
 		var constraintCodigo = '';
@@ -18,16 +64,18 @@ function createDataset(fields, constraints, sortFields) {
 				if (constraints[indexConstraints].fieldName == 'endpoint')
 					constraintEndpoint = constraints[indexConstraints].initialValue;
 				// if (constraints[indexConstraints].fieldName == 'sqlLimit')
-					//constraintSqlLimit = constraints[indexConstraints].initialValue;
+				//constraintSqlLimit = constraints[indexConstraints].initialValue;
 				if (constraints[indexConstraints].fieldName == 'tipoRequisicao')
 					constraintTipoRequisicao = constraints[indexConstraints].initialValue;
 			}
 
-			 log.warn('---Debug dsWsProtheus--- constraintCodigo: '+constraintCodigo);
-			 log.warn('---Debug dsWsProtheus--- constraintDados: '+constraintDados);
-			 log.warn('---Debug dsWsProtheus--- constraintEndpoint: '+constraintEndpoint);
-			 log.warn('---Debug dsWsProtheus--- constraintSqlLimit: '+constraintSqlLimit);
-			 log.warn('---Debug dsWsProtheus--- constraintTipoRequisicao: '+constraintTipoRequisicao);
+			log.warn('------------------------ Constraints dsWsProtheus ------------------------');
+			log.warn('---Debug dsWsProtheus--- constraintCodigo: ' + constraintCodigo);
+			log.warn('---Debug dsWsProtheus--- constraintDados: ' + constraintDados);
+			log.warn('---Debug dsWsProtheus--- constraintEndpoint: ' + constraintEndpoint);
+			log.warn('---Debug dsWsProtheus--- constraintSqlLimit: ' + constraintSqlLimit);
+			log.warn('---Debug dsWsProtheus--- constraintTipoRequisicao: ' + constraintTipoRequisicao);
+			log.warn('------------------------ ------------------------ ------------------------');
 
 			var dados = null;
 
@@ -45,9 +93,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < armazens.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([armazens[indexDados].COD, armazens[indexDados].DESC]);
 							}
-						} else {
-							mensagem = 'Nenhum armazém encontrado';
-						}
+						} else mensagem = 'Nenhum armazém encontrado';
 					} else if (constraintEndpoint == 'ccusto') {
 						if (dados.CUSTOS != undefined) {
 							var centrosCusto = dados.CUSTOS;
@@ -58,9 +104,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < centrosCusto.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([centrosCusto[indexDados].CUSTO, centrosCusto[indexDados].DESC01]);
 							}
-						} else {
-							mensagem = 'Nenhum centro de custo encontrado';
-						}
+						} else mensagem = 'Nenhum centro de custo encontrado';
 					} else if (constraintEndpoint == 'gruprod') {
 						if (dados.GRUPOS != undefined) {
 							var grupos = dados.GRUPOS;
@@ -71,9 +115,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < grupos.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([grupos[indexDados].GRUPO, grupos[indexDados].DESC]);
 							}
-						} else {
-							mensagem = 'Nenhum tipo de produto encontrado';
-						}
+						} else mensagem = 'Nenhum tipo de produto encontrado';
 					} else if (constraintEndpoint == 'ncm') {
 						if (dados.NCMS != undefined) {
 							var ncms = dados.NCMS;
@@ -84,9 +126,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < ncms.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([ncms[indexDados].COD, ncms[indexDados].DESC]);
 							}
-						} else {
-							mensagem = 'Nenhuma NCM encontrada';
-						}
+						} else mensagem = 'Nenhuma NCM encontrada';
 					} else if (constraintEndpoint == 'origem') {
 						if (dados.ORIGENS != undefined) {
 							var origens = dados.ORIGENS;
@@ -97,9 +137,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < origens.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([origens[indexDados].COD, origens[indexDados].DESC]);
 							}
-						} else {
-							mensagem = 'Nenhuma origem encontrada';
-						}
+						} else mensagem = 'Nenhuma origem encontrada';
 					} else if (constraintEndpoint == 'produto') {
 						dataset.addColumn('codigo');
 						dataset.addColumn('descricao');
@@ -116,9 +154,7 @@ function createDataset(fields, constraints, sortFields) {
 								for (var indexDados = 0; indexDados < produtos.length && indexDados < constraintSqlLimit; indexDados++) {
 									dataset.addRow([produtos[indexDados].CODIGO, produtos[indexDados].DESC, produtos[indexDados].TIPO, produtos[indexDados].UM, constraintTipoRequisicao, false, '']);
 								}
-							} else {
-								dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Nenhum produto encontrado']);
-							}
+							} else dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Nenhum produto encontrado']);
 						} else if (constraintTipoRequisicao == 'POST') {
 							if (constraintDados == '')
 								dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Não foi possível cadastrar o produto, pois nenhum dado foi informado']);
@@ -130,20 +166,15 @@ function createDataset(fields, constraints, sortFields) {
 								else
 									dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Não foi possível cadastrar o produto no Protheus']);
 							}
-						} else {
-							dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Tipo de requisição não encontrado']);
-						}
-					} else if (constraintEndpoint == 'solarma') {
+						} else dataset.addRow(['', '', '', '', constraintTipoRequisicao, true, 'Tipo de requisição não encontrado']);
+					} else if (constraintEndpoint == 'solcomp') {
 						if (constraintDados == '')
-							mensagem = 'Não foi possível cadastrar a requisição de materiais, pois nenhum dado foi informado';
+							mensagem = 'Não foi possível cadastrar a solicitação de compras, pois nenhum dado foi informado';
 						else {
 							if (dados.cod == 200) {
 								erro = false;
 								mensagem = dados.msg;
-							} else
-								mensagem = dados.errorMessage;
-							// else
-							// 	mensagem = 'Não foi possível cadastrar a requisição de materiais no Protheus';
+							} else mensagem = 'Código: ' + dados.errorCode + ' - Erro: ' + dados.errorMessage;
 						}
 					} else if (constraintEndpoint == 'tipoprod') {
 						if (dados.TIPOS != undefined) {
@@ -155,9 +186,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < tipos.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([tipos[indexDados].CHAVE, tipos[indexDados].DESC]);
 							}
-						} else {
-							mensagem = 'Nenhum tipo de produto encontrado';
-						}
+						} else mensagem = 'Nenhum tipo de produto encontrado';
 					} else if (constraintEndpoint == 'unimed') {
 						if (dados != null && dados.UNIMEDS != undefined) {
 							var unimeds = dados.UNIMEDS;
@@ -168,12 +197,8 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < unimeds.length && indexDados < constraintSqlLimit; indexDados++) {
 								dataset.addRow([unimeds[indexDados].UNIMED, unimeds[indexDados].UMRES]);
 							}
-						} else {
-							mensagem = 'Nenhuma unidade de medida encontrada';
-						}
-					} else {
-						mensagem = 'O endpoint informado não foi encontrado';
-					}
+						} else mensagem = 'Nenhuma unidade de medida encontrada';
+					} else mensagem = 'Endpoint não encontrado';
 				}
 			}
 		}
@@ -198,6 +223,14 @@ function createDataset(fields, constraints, sortFields) {
 	}
 }
 
+/**
+ * Faz conexão com o Protheus utilizando o serviço 'rest_protheus' cadastrado no fluig.
+ *
+ * @param {String} endpoint Nome do endpoint rest do Protheus que será utilizado.
+ * @param {String} tipoRequisicao São aceitos GET e POST.
+ * @param {String} codigo Usado na consulta de um produto específico.
+ * @param {String} dados Dados que serão gravados no Protheus.
+ */
 function consultarProtheus(endpoint, tipoRequisicao, codigo, dados) {
 	if (endpoint == '' || endpoint == null) return null;
 	if (tipoRequisicao == '' || tipoRequisicao == null) tipoRequisicao = 'GET';
@@ -229,6 +262,6 @@ function consultarProtheus(endpoint, tipoRequisicao, codigo, dados) {
 		else
 			return vo.getResult();
 	} catch (e) {
-		log.warn('Erro ao enviar requisição: ' + e);
+		log.warn('Erro ao enviar solicitação: ' + e);
 	}
 }
