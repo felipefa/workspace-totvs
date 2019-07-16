@@ -1,7 +1,10 @@
 var beforeSendValidate = function (numState, nextState) {
-	// ATIVIDADE 'APROVAR REQUISIÇÃO'
+	const loading = FLUIGC.loading(window);
+	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (numState == 5) {
 		const decisao = document.getElementById('decisao').value;
+
+		loading.show();
 
 		if (decisao == 'Aprovado') {
 			const dtNecessidade = document.getElementById('dtNecessidade').value;
@@ -15,7 +18,7 @@ var beforeSendValidate = function (numState, nextState) {
 				!isEmpty(centroCusto) &&
 				!isEmpty(motivo) &&
 				quantidadeItens != 0) {
-				// Faz integração com Protheus para gravar a requisição de materiais
+				// Faz integração com Protheus para gravar a solicitação de compras
 				const solicitacaoFluig = document.getElementById('solicitacaoFluig').value;
 				const itens = [];
 
@@ -28,7 +31,7 @@ var beforeSendValidate = function (numState, nextState) {
 						'ITEM': index + 1 + '',
 						'PRODUTO': $(`#codItem___${posicaoPaiFilho}`).val(),
 						'QUANT': $(`#quantidade___${posicaoPaiFilho}`).val(),
-						'OBS': `Solicitação fluig ID: ${solicitacaoFluig} - Local da necessidade: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`
+						'OBS': `ID fluig: ${solicitacaoFluig} - Local da necessidade: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`.toUpperCase()
 					});
 				});
 
@@ -40,7 +43,7 @@ var beforeSendValidate = function (numState, nextState) {
 					}
 				});
 				const constraintsSolicitacao = [
-					DatasetFactory.createConstraint('endpoint', 'solarma', null, ConstraintType.MUST),
+					DatasetFactory.createConstraint('endpoint', 'solcomp', null, ConstraintType.MUST),
 					DatasetFactory.createConstraint('tipoRequisicao', 'POST', null, ConstraintType.MUST),
 					DatasetFactory.createConstraint('dados', dados, null, ConstraintType.MUST),
 				];
@@ -53,16 +56,20 @@ var beforeSendValidate = function (numState, nextState) {
 						type: 'success'
 					});
 
+					loading.hide();
+
 					return true;
 				} else if (dsWsProtheus != null) {
-					console.log('Erro ao cadastrar requisição de materiais no Protheus:', dsWsProtheus.values[0].mensagem);
+					console.log('Erro ao cadastrar solicitação de compras no Protheus:', dsWsProtheus.values[0].mensagem);
 				}
 
 				FLUIGC.toast({
 					title: 'Atenção!',
-					message: 'Erro ao cadastrar requisição de materiais no Protheus.',
+					message: 'Erro ao cadastrar solicitação de compras no Protheus.',
 					type: 'warning'
 				});
+
+				loading.hide();
 
 				return false;
 			}
@@ -76,16 +83,30 @@ var beforeSendValidate = function (numState, nextState) {
 					type: 'warning'
 				});
 
+				loading.hide();
+
 				return false;
 			}
 
+			loading.hide();
+
 			return true;
 		}
+
+		FLUIGC.toast({
+			title: 'Atenção!',
+			message: 'Informe uma decisão na aprovação.',
+			type: 'warning'
+		});
+
+		loading.hide();
+
+		return false;
 	}
 }
 
 /**
- * @function isEmpty Função para verificar se a string é nula | vazia | indefinida
+ * Função para verificar se a string é nula | vazia | indefinida
  *
  * @param {object} value valor a ser verificado.
  *

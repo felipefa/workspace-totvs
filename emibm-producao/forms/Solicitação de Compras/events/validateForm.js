@@ -43,7 +43,7 @@ function validateForm(form) {
 	// ATIVIDADE APROVAR REQUISIÇÃO
 	if (atividade == 5) {
 		// PAINEL 'APROVAÇÃO'
-		if (form.getValue('decisao') == '')
+		if (form.getValue('decisao') == '' || form.getValue('decisao') == null)
 			msg += '<br/>Informe a decisão';
 		else if (form.getValue('decisao') != 'Aprovado' && form.getValue('obsAprov') == '')
 			msg += '<br/>Informe a observação da decisão';

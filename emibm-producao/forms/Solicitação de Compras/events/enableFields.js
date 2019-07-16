@@ -21,6 +21,7 @@ function enableFields(form) {
 		for (var index = 0; index < itens.length; index++) {
 			form.setEnabled('item___' + itens[index], false);
 			form.setEnabled('quantidade___' + itens[index], false);
+			form.setEnabled('obsItem___' + itens[index], false);
 		}
 	}
 }
