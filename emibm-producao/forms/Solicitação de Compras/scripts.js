@@ -5,6 +5,8 @@ $(() => {
 	const day = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
 	const currentDate = `${year}-${month}-${day}`;
 
+	esconderUltimaHr('hrItens');
+
 	if (ATIVIDADE == 0) {
 		document.getElementById('dtSolicitacao').value = currentDate;
 	}
@@ -15,10 +17,7 @@ $(() => {
 
 	document.getElementById('btnAdicionarItem').onclick = () => {
 		wdkAddChild('itens');
-		if ($('[id^=item___]').length > 0)
-			document.getElementById('hrItens').style.display = 'block';
-		else
-			document.getElementById('hrItens').style.display = 'none';
+		esconderUltimaHr('hrItens');
 	};
 
 	document.getElementById('btnIncluirProduto').onclick = () => {
@@ -43,13 +42,22 @@ $(() => {
 	}
 });
 
+/**
+ * Esconde o último elemento hr do pai filho.
+ *
+ * @param {String} id Id da tag hr no pai filho com underscore sem a posição. Exemplo: 'item___'.
+ * @param {String} ultimaPosicao Última posição do pai filho.
+ */
+const esconderUltimaHr = (id) => {
+	$('[id^=' + id + ']').each(function () {
+		$(this).show();
+	});
+	$('[id^=' + id + ']:last').hide();
+}
+
 const removerItem = (elemento) => {
 	fnWdkRemoveChild(elemento);
-
-	if ($('[id^=item___]').length > 0)
-		document.getElementById('hrItens').style.display = 'block';
-	else
-		document.getElementById('hrItens').style.display = 'none';
+	esconderUltimaHr('hrItens');
 }
 
 const verificarQuantidade = (elemento) => {

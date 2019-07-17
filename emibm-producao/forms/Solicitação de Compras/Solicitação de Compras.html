@@ -129,11 +129,10 @@
 									<tbody>
 										<tr>
 											<td class="fs-v-align-middle">
-												<div class="">
-													<input type="hidden" name="codItem" id="codItem">
-													<div class="form-group col-xs-12 col-md-7">
-														<label>Item</label>
-														<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
+												<input type="hidden" name="codItem" id="codItem">
+												<div class="form-group col-xs-12 col-md-7">
+													<label>Item</label>
+													<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
 															'displayKey':'descricao',
 															'datasetId':'dsWsProtheus',
 															'filterValues':'endpoint,produto',
@@ -142,28 +141,28 @@
 																{'field':'codigo', 'label':'Código'},
 																{'field':'descricao', 'label':'Descrição'}
 															]}">
+												</div>
+												<div class="form-group col-xs-12 col-md-2">
+													<label>Unidade de Medida</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-query-gap"></span></span>
+														<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
 													</div>
-													<div class="form-group col-xs-12 col-md-2">
-														<label>Unidade de Medida</label>
-														<div class="input-group">
-															<span class="input-group-addon"><span class="fluigicon fluigicon-query-gap"></span></span>
-															<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
-														</div>
+												</div>
+												<div class="form-group col-xs-12 col-md-3">
+													<label>Quantidade</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
+														<input type="number" class="form-control" name="quantidade" id="quantidade" placeholder="Informe a quantidade" step="1" min="1" onblur="verificarQuantidade(this)">
 													</div>
-													<div class="form-group col-xs-12 col-md-3">
-														<label>Quantidade</label>
-														<div class="input-group">
-															<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
-															<input type="number" class="form-control" name="quantidade" id="quantidade" placeholder="Informe a quantidade" step="1" min="1" onblur="verificarQuantidade(this)">
-														</div>
+												</div>
+												<div class="form-group col-xs-12">
+													<label>Observação</label>
+													<div class="input-group">
+														<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
+														<textarea rows="1" class="form-control" name="obsItem" id="obsItem" style="resize: vertical;" placeholder="Informe alguma observação para este item"></textarea>
 													</div>
-													<div class="form-group col-xs-12">
-														<label>Observação</label>
-														<div class="input-group">
-															<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-															<textarea rows="1" class="form-control" name="obsItem" id="obsItem" style="resize: vertical;" placeholder="Informe alguma observação para este item"></textarea>
-														</div>
-													</div>
+													<hr id="hrItens">
 												</div>
 											</td>
 										</tr>
@@ -171,7 +170,6 @@
 								</table>
 							</div>
 
-							<hr id="hrItens" style="display: none;">
 
 							<div class="row">
 								<div class="form-group col-xs-12 col-md-2">
