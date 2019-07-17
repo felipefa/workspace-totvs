@@ -628,24 +628,29 @@ Return
 /* ------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service NCM
 WSRESTFUL NCM DESCRIPTION "Servico REST - Nomenclatura Comum do Mercosul (NCM)"
+	WSDATA STRDESC As String
 	WSMETHOD GET DESCRIPTION "Retorna os NCMs cadastrados" WSSYNTAX "/NCM"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de NCM
-WSMETHOD GET WSSERVICE NCM
+WSMETHOD GET WSRECEIVE STRDESC WSSERVICE NCM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oNCM := NCM():New() //Objeto da classe NCM
 	Local oResponse := NCM_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cStrDesc := Self:STRDESC
+
+	IF (EMPTY(cStrDesc))
+		cStrDesc := ""
 
 	::SetContentType("application/json")
 
 	BeginSQL Alias cNextAlias
 		SELECT YD_TEC, YD_DESC_P
 		FROM %table:SYD% SYD
-		WHERE SYD.%notdel% ORDER BY YD_DESC_P
+		WHERE SYD.%notdel% and YD_DESC_P like '%'++'%' ORDER BY YD_DESC_P
 	EndSQL
 
 	(cNextAlias)->(DbGoTop())
@@ -826,7 +831,6 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLARMA
 
 	::SetContentType("application/json")
 	FWJsonDeserialize(cJson, @oParseJSON)
-	SCP->(DbSetOrder(3))
 
 	//Dado da solicitacao
 	Aadd(aDados, {"CP_EMISSAO", dDataBase, Nil})
@@ -865,7 +869,6 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLARMA
 Return(lRet)
 //Fim do Metodo POST do Web Service de Solicitacao ao Armazem
 
-
 /* ------------------------------------------------------------------------------------------- */
 /* ------------------------------- Solicitação de Compras ------------------------------------ */
 /* ------------------------------------------------------------------------------------------- */
@@ -900,28 +903,29 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 
 	::SetContentType("application/json")
 	FWJsonDeserialize(cJson, @oParseJSON)
-	SC1->(DbSetOrder(3))
 
 	//Dado da solicitacao
 	Aadd(aCab, {"C1_EMISSAO", dDataBase})
+	Aadd(aCab, {"C1_SOLICIT", UsrFullName(RetCodUsr())})
 
 	//Monta itens da solicitacao
 	For nI := 1 to len(oParseJSON:OBJETO:ITENS)
 		aItens := {}
-		//Aadd(aItens,{"C1_DATPRF", CtoD(oParseJSON:OBJETO:MOTIVO), Nil})
-		Aadd(aItens,{"C1_ITEM", StrZero(nI, Len(SC1->C1_ITEM)), Nil})
+		Aadd(aItens,{"C1_ITEM", StrZero(VAL(oParseJSON:OBJETO:ITENS[nI]:ITEM), (TamSX3("C1_ITEM")[1])), Nil})
 		Aadd(aItens,{"C1_PRODUTO", oParseJSON:OBJETO:ITENS[nI]:PRODUTO, Nil})
-		Aadd(aItens,{"C1_QUANT", oParseJSON:OBJETO:ITENS[nI]:OBS, Nil})
-		//Aadd(aItens,{"C1_OBS", DecodeUTF8(oParseJSON:OBJETO:ITENS[nI]:OBS, "cp1252"), Nil})
+		Aadd(aItens,{"C1_QUANT", VAL(oParseJSON:OBJETO:ITENS[nI]:QUANT), Nil})
+		Aadd(aItens,{"C1_OBS", DecodeUTF8(oParseJSON:OBJETO:ITENS[nI]:OBS + oParseJSON:OBJETO:CC, "cp1252"), Nil})
+		Aadd(aItens,{"C1_DATPRF", CtoD(oParseJSON:OBJETO:MOTIVO), Nil})
+		Aadd(aItens,{"C1_CC", PadR(Alltrim(oParseJSON:OBJETO:CC),TamSX3("C1_CC")[1]), Nil})
 		Aadd(aAllItens, aItens)
-	Next nI
+	Next
 
-	MSExecAuto({|x,y| mata110(x,y)}, aCab, aAllItens)
+	MSExecAuto({|x,y, z| MATA110(x,y,z)}, aCab, aAllItens, 3)
 
-	If lMsErroAutoS
-		cArqLog := dDataBase + " - " + SubStr(Time(), 1, 5) + ".log"
+	If lMsErroAuto
+		cArqLog := "erro.log"
 		RollBackSX8()
-		cErro := MostraErro("\log_solarm", cArqLog)
+		cErro := MostraErro("\log_solcomp", cArqLog)
 		cErro := TrataErro(cErro)
 		SetRestFault(400, cErro)
 		lRet := .F.
@@ -930,6 +934,7 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 		cJSONRet := '{"cod": "200"';
 				   + ', "sucesso":"TRUE"';
 				   + ', "msg":"Solicitação cadastrada com sucesso!"';
+				   + ', "solicitacao":"' + SC1->C1_NUM + '"';
 				   + '}'
 
 		::SetResponse(cJSONRet)
