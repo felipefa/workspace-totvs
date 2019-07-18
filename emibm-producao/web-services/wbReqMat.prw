@@ -12,36 +12,49 @@ Return
 /* ----------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service PRODUTO
 WSRESTFUL PRODUTO DESCRIPTION "Servico REST para cadastro de Produtos"
-	WSDATA CODPRODUTO As String
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
 
-	WSMETHOD GET DESCRIPTION "Retorna os produtos cadastrados" WSSYNTAX "/PRODUTO || /PRODUTO/{CODPRODUTO}"
+	WSMETHOD GET DESCRIPTION "Retorna os produtos cadastrados" WSSYNTAX "/PRODUTO || /PRODUTO&{FILTRO}&{TIPO}"
 	WSMETHOD POST DESCRIPTION "Cadastrar produto" WSSYNTAX "/PRODUTO"
 END WSRESTFUL
 
 //Inicio do Mitodo GET do Web Service de PRODUTO
-WSMETHOD GET WSRECEIVE CODPRODUTO WSSERVICE PRODUTO
-	Local cCodProduto := Self:CODPRODUTO
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oProduto := PROD():New() //Objeto da classe produto
 	Local oResponse := PROD_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := ""
 
 	::SetContentType("application/json")
 
 	//Caso nao seja informado codigo do produto no parametro, ira retornar todos os produtos
-	IF (EMPTY(cCodProduto))
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT B1_COD, B1_DESC, B1_UM, B1_TIPO
+			SELECT TOP 5 B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
-			WHERE SB1.%notdel% AND B1_MSBLQL <> '1' ORDER BY B1_DESC
+			WHERE SB1.%notdel%
+				AND B1_MSBLQL <> '1'
+			ORDER BY B1_DESC
 		EndSQL
 	ELSE
+		If (cTipo == "COD")
+			cLike := "% B1_COD LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% B1_DESC LIKE '%" + cFiltro + "%'%"
+		EndIf
+
 		BeginSQL Alias cNextAlias
-			SELECT B1_COD, B1_DESC, B1_UM, B1_TIPO
+			SELECT TOP 5 B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
-			WHERE B1_COD = %exp:cCodProduto% AND SB1.%notdel% AND B1_MSBLQL <> '1' ORDER BY B1_DESC
+			WHERE SB1.%notdel%
+			AND %exp:cLike%
+			AND B1_MSBLQL <> '1' ORDER BY B1_DESC
 		EndSQL
 	ENDIF
 
@@ -208,7 +221,10 @@ Return(cNewErro)
 /* ----------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Centro de Custo
 WSRESTFUL CCUSTO DESCRIPTION "Servico REST - Centro de Custos"
-	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/CCUSTO"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/CCUSTO&{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Centro de Custo
@@ -219,14 +235,38 @@ WSMETHOD GET WSSERVICE CCUSTO
 	Local oResponse := CC_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := "";
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT CTT_CUSTO, CTT_DESC01
-		FROM %table:CTT% CTT
-		WHERE CTT.%notdel% AND CTT_CLASSE = '2' AND CTT_BLOQ = '2' ORDER BY CTT_DESC01
-	EndSQL
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 CTT_CUSTO, CTT_DESC01
+			FROM %table:CTT% CTT
+			WHERE CTT.%notdel%
+				AND CTT_CLASSE = '2'
+				AND CTT_BLOQ = '2'
+			ORDER BY CTT_DESC01
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% CTT_CUSTO LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% CTT_DESC01 LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 CTT_CUSTO, CTT_DESC01
+			FROM %table:CTT% CTT
+			WHERE CTT.%notdel%
+				AND %exp:cLike%
+				AND CTT_CLASSE = '2'
+				AND CTT_BLOQ = '2'
+			ORDER BY CTT_DESC01
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -292,25 +332,47 @@ Return
 /* ----------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Armazem
 WSRESTFUL ARMAZEM DESCRIPTION "Servico REST - Armazem"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
 	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/ARMAZEM"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Armazem
-WSMETHOD GET WSSERVICE ARMAZEM
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ARMAZEM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oArma := Arma():New() //Objeto da classe armazem
 	Local oResponse := Arma_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := "";
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT NNR_CODIGO, NNR_DESCRI
-		FROM %table:NNR% NNR
-		WHERE NNR.%notdel% ORDER BY NNR_DESCRI
-	EndSQL
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 NNR_CODIGO, NNR_DESCRI
+			FROM %table:NNR% NNR
+			WHERE NNR.%notdel% ORDER BY NNR_DESCRI
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% NNR_CODIGO LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% NNR_DESCRI LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 NNR_CODIGO, NNR_DESCRI
+			FROM %table:NNR% NNR
+			WHERE NNR.%notdel%
+			AND %exp:cLike%
+			ORDER BY NNR_DESCRI
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -376,25 +438,47 @@ Return
 /* ------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Unidade de Medida
 WSRESTFUL UNIMED DESCRIPTION "Servico REST - Unidades de Medida"
-	WSMETHOD GET DESCRIPTION "Retorna as Unidades de Medida cadastradoas" WSSYNTAX "/UNIMED"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna as Unidades de Medida cadastradoas" WSSYNTAX "/UNIMED?{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Unidade de Medida
-WSMETHOD GET WSSERVICE UNIMED
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE UNIMED
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oUM := UM():New() //Objeto da classe Unidade de Medida
 	Local oResponse := UM_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := "";
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT AH_UNIMED, AH_UMRES
-		FROM %table:SAH% SAH
-		WHERE SAH.%notdel% ORDER BY AH_UMRES
-	EndSQL
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 AH_UNIMED, AH_UMRES
+			FROM %table:SAH% SAH
+			WHERE SAH.%notdel% ORDER BY AH_UMRES
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% AH_UNIMED LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% AH_UMRES LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 AH_UNIMED, AH_UMRES
+			FROM %table:SAH% SAH
+			WHERE SAH.%notdel%
+				AND %exp:cLike%
+			ORDER BY AH_UMRES
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -460,25 +544,48 @@ Return
 /* ------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Grupo de produto
 WSRESTFUL GRUPROD DESCRIPTION "Servico REST - Grupo de Produto"
-	WSMETHOD GET DESCRIPTION "Retorna as Grupo de Produto cadastrados" WSSYNTAX "/GRUPROD"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna as Grupo de Produto cadastrados" WSSYNTAX "/GRUPROD?{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Grupo de Produto
-WSMETHOD GET WSSERVICE GRUPROD
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE GRUPROD
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oGP := GP():New() //Objeto da classe Grupo de Produto
 	Local oResponse := GP_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := "";
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT BM_GRUPO, BM_DESC
-		FROM %table:SBM% SBM
-		WHERE SBM.%notdel% ORDER BY BM_DESC
-	EndSQL
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 BM_GRUPO, BM_DESC
+			FROM %table:SBM% SBM
+			WHERE SBM.%notdel%
+			ORDER BY BM_DESC
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% BM_GRUPO LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% BM_DESC LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 BM_GRUPO, BM_DESC
+			FROM %table:SBM% SBM
+			WHERE SBM.%notdel%
+			AND %exp:cLike%
+			ORDER BY BM_DESC
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -544,25 +651,50 @@ Return
 /* ------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Origem do produto
 WSRESTFUL ORIGEM DESCRIPTION "Servico REST - Origem do produto"
-	WSMETHOD GET DESCRIPTION "Retorna os cadastrado de Origem de Produto" WSSYNTAX "/ORIGEM"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna os cadastrado de Origem de Produto" WSSYNTAX "/ORIGEM?{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Origem
-WSMETHOD GET WSSERVICE ORIGEM
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oOrigem := Origem():New() //Objeto da classe Origem
 	Local oResponse := Origem_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := "";
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT X5_CHAVE, X5_DESCRI
-		FROM  %Table:SX5% SX5
-		WHERE SX5.%NotDel% AND X5_TABELA = 'S0' ORDER BY X5_CHAVE
-	EndSQL
+	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			FROM  %Table:SX5% SX5
+			WHERE SX5.%NotDel%
+				AND X5_TABELA = 'S0'
+			ORDER BY X5_CHAVE
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% X5_CHAVE LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% X5_DESCRI LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			FROM  %Table:SX5% SX5
+			WHERE SX5.%NotDel%
+				AND X5_TABELA = 'S0'
+				AND %exp:cLike%
+			ORDER BY X5_CHAVE
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -628,30 +760,48 @@ Return
 /* ------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service NCM
 WSRESTFUL NCM DESCRIPTION "Servico REST - Nomenclatura Comum do Mercosul (NCM)"
-	WSDATA STRDESC As String
-	WSMETHOD GET DESCRIPTION "Retorna os NCMs cadastrados" WSSYNTAX "/NCM"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna os NCMs cadastrados" WSSYNTAX "/NCM?{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de NCM
-WSMETHOD GET WSRECEIVE STRDESC WSSERVICE NCM
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE NCM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oNCM := NCM():New() //Objeto da classe NCM
 	Local oResponse := NCM_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cStrDesc := Self:STRDESC
-
-	IF (EMPTY(cStrDesc))
-		cStrDesc := ""
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := ""
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT YD_TEC, YD_DESC_P
-		FROM %table:SYD% SYD
-		WHERE SYD.%notdel% and YD_DESC_P like '%'++'%' ORDER BY YD_DESC_P
-	EndSQL
+	If (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 YD_TEC, YD_DESC_P
+			FROM %table:SYD% SYD
+			WHERE SYD.%notdel%
+			ORDER BY YD_DESC_P
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% YD_TEC LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% YD_DESC_P LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 YD_TEC, YD_DESC_P
+			FROM %table:SYD% SYD
+			WHERE SYD.%notdel%
+			AND %exp:cLike%
+			ORDER BY YD_DESC_P
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
@@ -717,26 +867,51 @@ Return
 /* -------------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service
 WSRESTFUL TIPOPROD DESCRIPTION "Servico REST - Tipos de Produto"
-	WSMETHOD GET DESCRIPTION "Retorna os Tipo de Produtos cadastrados" WSSYNTAX "/TIPOPROD"
+	WSDATA FILTRO As String
+	WSDATA TIPO As String
+
+	WSMETHOD GET DESCRIPTION "Retorna os Tipo de Produtos cadastrados" WSSYNTAX "/TIPOPROD?{FILTRO}&{TIPO}"
 END WSRESTFUL
 //Fim da Declaracao do Web Service
 
 //Inicio do Metodo GET do Web Service de Tipo de Produto
-WSMETHOD GET WSSERVICE TIPOPROD
+WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oTipo := TIPO():New() //Objeto da classe tipo
 	Local oResponse := TIPO_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
+	Local cFiltro := UPPER(Self:FILTRO)
+	Local cTipo := UPPER(Self:TIPO)
+	Local cLike := ""
 
 	::SetContentType("application/json")
 
-	BeginSQL Alias cNextAlias
-		SELECT X5_CHAVE, X5_DESCRI
-		FROM  %Table:SX5% SX5
-		WHERE SX5.%NotDel% AND X5_TABELA = '02' ORDER BY X5_CHAVE
-	EndSQL
+	If (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			FROM  %Table:SX5% SX5
+			WHERE SX5.%NotDel%
+				AND X5_TABELA = '02'
+			ORDER BY X5_CHAVE
+		EndSQL
+	Else
+		If (cTipo == "COD")
+			cLike := "% X5_CHAVE LIKE '%" + cFiltro + "%'%"
+		Else
+			cLike := "% X5_DESCRI LIKE '%" + cFiltro + "%'%"
+		EndIf
+
+		BeginSQL Alias cNextAlias
+			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			FROM  %Table:SX5% SX5
+			WHERE SX5.%NotDel%
+				AND X5_TABELA = '02'
+				AND %exp:cLike%
+			ORDER BY X5_CHAVE
+		EndSQL
+	EndIf
 
 	(cNextAlias)->(DbGoTop())
 
