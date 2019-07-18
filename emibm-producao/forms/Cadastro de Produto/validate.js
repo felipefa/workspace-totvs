@@ -1,26 +1,58 @@
 var beforeSendValidate = function (numState, nextState) {
+	// ATIVIDADE 'INÍCIO'
+	if (numState == 0 || numState == 4) {
+		// PAINEL 'DADOS DA SOLICITAÇÃO'
+		const motivo = document.getElementById('motivo').value;
+
+		// PAINEL 'PRODUTO'
+		const grupo = document.getElementById('codGrupo').value;
+		const tipo = document.getElementById('codTipo').value;
+		const descricao = document.getElementById('descricao').value;
+		const unMedida = document.getElementById('codUnMedida').value;
+
+		if (!isEmpty(motivo) &&
+			!isEmpty(grupo) &&
+			!isEmpty(tipo) &&
+			!isEmpty(descricao) &&
+			!isEmpty(unMedida)) {
+			return true;
+		}
+
+		FLUIGC.toast({
+			title: 'Atenção!',
+			message: 'Preencha todos os campos.',
+			type: 'warning'
+		});
+
+		return false;
+	}
+
 	// ATIVIDADE 'APROVAR CADASTRO'
 	if (numState == 5) {
 		const decisao = document.getElementById('decisao').value;
 
 		if (decisao == 'Aprovado') {
-			// const codigo = document.getElementById('codigo').value;
+			// PAINEL 'PRODUTO'
 			const grupo = document.getElementById('codGrupo').value;
 			const tipo = document.getElementById('codTipo').value;
 			const descricao = document.getElementById('descricao').value;
 			const unMedida = document.getElementById('codUnMedida').value;
+
+			// PAINEL 'APROVAÇÃO'
 			const armazem = document.getElementById('codArmazemPad').value;
 			const posIpiNcm = document.getElementById('codPosIpiNcm').value;
 			const origem = document.getElementById('codOrigem').value;
 
-			if (grupo != '' && tipo != '' && descricao != '' && unMedida != ''
-				&& armazem != '' && posIpiNcm != '' && origem != ''
-				&& grupo != null && tipo != null && descricao != null && unMedida != null
-				&& armazem != null && posIpiNcm != null && origem != null) {
+			if (!isEmpty(grupo) &&
+				!isEmpty(tipo) &&
+				!isEmpty(descricao) &&
+				!isEmpty(unMedida) &&
+				!isEmpty(armazem) &&
+				!isEmpty(posIpiNcm) &&
+				!isEmpty(origem)) {
 				// Faz integração com Protheus para gravar o produto
 				const dados = JSON.stringify({
 					'PRODUTO': {
-						// 'COD': codigo.toUpperCase(),
 						'GRUPO': grupo,
 						'TIPO': tipo,
 						'DESC': descricao.toUpperCase(),
@@ -45,9 +77,8 @@ var beforeSendValidate = function (numState, nextState) {
 					});
 
 					return true;
-				} else if (dsWsProtheus != null) {
+				} else if (dsWsProtheus != null)
 					console.log('Erro ao cadastrar produto no Protheus:', dsWsProtheus.values[0].mensagem);
-				}
 
 				FLUIGC.toast({
 					title: 'Atenção!',
@@ -57,10 +88,10 @@ var beforeSendValidate = function (numState, nextState) {
 
 				return false;
 			}
-		} else if (decisao != '' && decisao != null) {
+		} else if (!isEmpty(decisao)) {
 			const obsAprov = document.getElementById('obsAprov').value;
 
-			if (obsAprov == '' || obsAprov == null) {
+			if (isEmpty(obsAprov)) {
 				const mensagem = MOBILE != null && MOBILE ? 'Preencha a observação da aprovação.' : 'Preencha o motivo da decisão escolhida na aprovação.';
 
 				FLUIGC.toast({

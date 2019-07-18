@@ -17,7 +17,6 @@ function enableFields(form) {
         form.setEnabled('motivo', false);
 
 		// PAINEL 'PRODUTO'
-        // form.setEnabled('codigo', false);
         form.setEnabled('grupo', false);
         form.setEnabled('tipo', false);
         form.setEnabled('descricao', false);
