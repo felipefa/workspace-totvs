@@ -13,6 +13,7 @@ function enableFields(form) {
 		// PAINEL 'DADOS DA SOLICITAÇÃO'
 		form.setEnabled('dtNecessidade', false);
 		form.setEnabled('localNecessidade', false);
+		form.setEnabled('filial', false);
 		form.setEnabled('centroCusto', false);
 		form.setEnabled('motivo', false);
 

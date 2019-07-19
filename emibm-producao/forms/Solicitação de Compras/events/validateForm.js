@@ -2,7 +2,7 @@ function validateForm(form) {
 	var atividade = getValue('WKNumState');
 	var msg = '';
 
-	// ATIVIDADE INÍCIO
+	// ATIVIDADE 'INÍCIO'
 	if (atividade == 0 || atividade == 4) {
 		// PAINEL 'DADOS DA SOLICITAÇÃO'
 		var dtNecessidade = form.getValue('dtNecessidade');
@@ -16,7 +16,9 @@ function validateForm(form) {
 		}
 		if (form.getValue('localNecessidade') == '')
 			msg += '<br/>Informe o local da necessidade';
-		if (form.getValue('centroCusto') == '' || form.getValue('centroCusto') == null)
+		if (form.getValue('filial') == '' || form.getValue('filial') == null || form.getValue('codFilial') == '')
+			msg += '<br/>Informe a filial';
+		if (form.getValue('centroCusto') == '' || form.getValue('centroCusto') == null || form.getValue('codCentroCusto') == '')
 			msg += '<br/>Informe o centro de custo';
 		if (form.getValue('motivo') == '')
 			msg += '<br/>Informe o motivo da requisição';
@@ -27,9 +29,13 @@ function validateForm(form) {
 			msg += '<br/>Informe pelo menos um item';
 		} else {
 			for (var index = 0; index < itens.length; index++) {
-				if (form.getValue('item___' + itens[index]) == '' || form.getValue('item___' + itens[index]) == null)
+				if (form.getValue('item___' + itens[index]) == '' ||
+					form.getValue('item___' + itens[index]) == null ||
+					form.getValue('codItem___' + itens[index]) == '')
 					throw '<br/>Informe um item';
+
 				var quantidade = form.getValue('quantidade___' + itens[index]);
+
 				if (quantidade == '')
 					throw '<br/>Informe uma quantidade';
 				else if (quantidade < 1)
@@ -40,7 +46,7 @@ function validateForm(form) {
 		}
 	}
 
-	// ATIVIDADE APROVAR REQUISIÇÃO
+	// ATIVIDADE 'APROVAR REQUISIÇÃO'
 	if (atividade == 5) {
 		// PAINEL 'APROVAÇÃO'
 		if (form.getValue('decisao') == '' || form.getValue('decisao') == null)

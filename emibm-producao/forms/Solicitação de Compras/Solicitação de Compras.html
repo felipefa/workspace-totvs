@@ -2,6 +2,7 @@
 
 <head>
 	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css" />
+	<link type="text/css" rel="stylesheet" href="autocomplete.css" />
 	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
@@ -37,7 +38,7 @@
 			<input type="hidden" name="matSolicitante" id="matSolicitante">
 			<input type="hidden" name="matGestor" id="matGestor">
 			<input type="hidden" name="codCentroCusto" id="codCentroCusto">
-			<input type="hidden" name="solicitacaoFluig" id="solicitacaoFluig">
+			<input type="hidden" name="codFilial" id="codFilial">
 
 			<!-- PAINEL 'DADOS DA SOLICITAÇÃO' -->
 			<div class="panel-group" id="accordionOne">
@@ -57,12 +58,20 @@
 										<input type="date" class="form-control" name="dtSolicitacao" id="dtSolicitacao" readonly>
 									</div>
 								</div>
-								<div class="form-group col-md-4">
+								<div class="form-group col-md-3">
 									<label>Solicitante</label>
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
 										<input type="text" class="form-control" name="solicitante" id="solicitante" readonly>
 									</div>
+								</div>
+								<div class="form-group col-md-3">
+									<label>Solicitação Fluig</label>
+									<input type="text" class="form-control" name="solicitacaoFluig" id="solicitacaoFluig" readonly>
+								</div>
+								<div class="form-group col-md-3" id="protheus" style="display: none;">
+									<label>Solicitação Protheus</label>
+									<input type="text" class="form-control" name="solicitacaoProtheus" id="solicitacaoProtheus" readonly>
 								</div>
 							</div>
 
@@ -74,24 +83,22 @@
 										<input type="date" class="form-control" name="dtNecessidade" id="dtNecessidade">
 									</div>
 								</div>
-								<div class="form-group col-md-4">
-									<label>Local da Necessidade</label>
+								<div class="form-group col-md-3">
+									<label class="control-label" for="localNecessidade">Local da Necessidade</label>
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-map-marker"></span></span>
-										<input type="text" class="form-control" name="localNecessidade" id="localNecessidade" placeholder="Informe o local da necessidade">
+										<input type="text" class="form-control" name="localNecessidade" id="localNecessidade" maxlength="25" placeholder="Informe o local da necessidade">
 									</div>
+									<p class="help-block-localNecessidade help-block"></p>
 								</div>
-								<div class="form-group col-md-5">
-									<label>Centro de Custo</label>
-									<input type="zoom" class="form-control" id="centroCusto" name="centroCusto" data-zoom="{
-										'displayKey':'descricao',
-										'datasetId':'dsWsProtheus',
-										'filterValues':'endpoint,ccusto',
-										'placeholder': 'Selecione o centro de custo',
-										'fields':[
-											{'field':'codigo', 'label':'Código'},
-											{'field':'descricao', 'label':'Descrição'}
-										]}">
+								<div class="form-group col-md-3">
+									<label class="control-label" for="filial">Filial</label>
+									<input type="text" class="form-control" id="filial" name="filial" placeholder="Selecione uma filial">
+									<p class="help-block-filial help-block"></p>
+								</div>
+								<div class="form-group col-md-3">
+									<label for="centroCusto">Centro de Custo</label>
+									<input type="text" class="form-control" id="centroCusto" name="centroCusto" placeholder="Selecione um centro de custo">
 								</div>
 							</div>
 
@@ -100,7 +107,7 @@
 									<label>Motivo</label>
 									<div class="input-group">
 										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-										<textarea rows="2" class="form-control" name="motivo" id="motivo" style="resize: vertical;" placeholder="Informe o motivo da abertura da solicitação de compras"></textarea>
+										<input class="form-control" name="motivo" id="motivo" maxlength="50" placeholder="Informe o motivo da solicitação">
 									</div>
 								</div>
 							</div>
@@ -130,17 +137,9 @@
 										<tr>
 											<td class="fs-v-align-middle">
 												<input type="hidden" name="codItem" id="codItem">
-												<div class="form-group col-xs-12 col-md-7">
-													<label>Item</label>
-													<input type="zoom" class="form-control" name="item" id="item" data-zoom="{
-															'displayKey':'descricao',
-															'datasetId':'dsWsProtheus',
-															'filterValues':'endpoint,produto',
-															'placeholder': 'Selecione um produto',
-															'fields':[
-																{'field':'codigo', 'label':'Código'},
-																{'field':'descricao', 'label':'Descrição'}
-															]}">
+												<div class="form-group col-xs-12 col-md-3">
+													<label for="item">Item</label>
+													<input type="text" class="form-control" name="item" id="item" placeholder="Selecione um produto">
 												</div>
 												<div class="form-group col-xs-12 col-md-2">
 													<label>Unidade de Medida</label>
@@ -149,21 +148,21 @@
 														<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
 													</div>
 												</div>
-												<div class="form-group col-xs-12 col-md-3">
+												<div class="form-group col-xs-12 col-md-2">
 													<label>Quantidade</label>
 													<div class="input-group">
 														<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
-														<input type="number" class="form-control" name="quantidade" id="quantidade" placeholder="Informe a quantidade" step="1" min="1" onblur="verificarQuantidade(this)">
+														<input type="number" class="form-control" name="quantidade" id="quantidade" maxlength="30" placeholder="Informe a qtd." step="1" min="1" onblur="verificarQuantidade(this)">
 													</div>
 												</div>
-												<div class="form-group col-xs-12">
+												<div class="form-group col-xs-12 col-md-5">
 													<label>Observação</label>
 													<div class="input-group">
 														<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-														<textarea rows="1" class="form-control" name="obsItem" id="obsItem" style="resize: vertical;" placeholder="Informe alguma observação para este item"></textarea>
+														<textarea rows="1" class="form-control" name="obsItem" id="obsItem" maxlength="50" style="resize: vertical;" placeholder="Informe uma observação para o item"></textarea>
 													</div>
-													<hr id="hrItens">
 												</div>
+												<hr id="hrItens">
 											</td>
 										</tr>
 									</tbody>

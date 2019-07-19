@@ -31,13 +31,13 @@ var beforeSendValidate = function (numState, nextState) {
 						'ITEM': index + 1 + '',
 						'PRODUTO': $(`#codItem___${posicaoPaiFilho}`).val(),
 						'QUANT': $(`#quantidade___${posicaoPaiFilho}`).val(),
-						'OBS': `ID fluig: ${solicitacaoFluig} - Local da necessidade: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`.toUpperCase()
+						'OBS': `ID fluig: ${solicitacaoFluig} - Local: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`.toUpperCase()
 					});
 				});
 
 				const dados = JSON.stringify({
 					'OBJETO': {
-						'CCUSTO': centroCusto,
+						'CC': centroCusto,
 						'MOTIVO': dtNecessidade.split('-')[2] + '/' + dtNecessidade.split('-')[1] + '/' + dtNecessidade.split('-')[0],
 						'ITENS': itens
 					}
@@ -55,6 +55,8 @@ var beforeSendValidate = function (numState, nextState) {
 						message: dsWsProtheus.values[0].mensagem,
 						type: 'success'
 					});
+
+					document.getElementById('solicitacaoProtheus').value = dsWsProtheus.values[0].solicitacao;
 
 					loading.hide();
 
