@@ -27,8 +27,8 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 	Local oResponse := PROD_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := ""
 
 	::SetContentType("application/json")
@@ -43,7 +43,9 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 			ORDER BY B1_DESC
 		EndSQL
 	ELSE
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% B1_COD LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% B1_DESC LIKE '%" + cFiltro + "%'%"
@@ -53,8 +55,9 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 			SELECT TOP 5 B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
 			WHERE SB1.%notdel%
-			AND %exp:cLike%
-			AND B1_MSBLQL <> '1' ORDER BY B1_DESC
+				AND %exp:cLike%
+				AND B1_MSBLQL <> '1'
+			ORDER BY B1_DESC
 		EndSQL
 	ENDIF
 
@@ -71,7 +74,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existem produtos cadastrados.")
@@ -194,9 +197,9 @@ Static Function GetNewCod()
 	Local cCod := GetSX8Num("SB1", "B1_COD")
 	Local aArea := GetArea()
 
-	SB1->( DbSetOrder(1) )
+	SB1->(DbSetOrder(1))
 
-	While SB1->(DbSeek(xFilial("SB1") + cCod ))
+	While SB1->(DbSeek(xFilial("SB1") + cCod))
 		cCod := GetSX8Num("SB1", "B1_COD")
 	EndDo
 
@@ -223,47 +226,53 @@ Return(cNewErro)
 WSRESTFUL CCUSTO DESCRIPTION "Servico REST - Centro de Custos"
 	WSDATA FILTRO As String
 	WSDATA TIPO As String
+	WSDATA FILIAL As String
 
-	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/CCUSTO&{FILTRO}&{TIPO}"
+	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/CCUSTO?{FILTRO}&{TIPO}&{FILIAL}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Centro de Custo
-WSMETHOD GET WSSERVICE CCUSTO
+WSMETHOD GET WSRECEIVE FILTRO, TIPO, FILIAL WSSERVICE CCUSTO
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oCentroC := CC():New() //Objeto da classe centro de custo
 	Local oResponse := CC_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
+	Local cFil := Self:FILIAL
 	Local cLike := "";
 
 	::SetContentType("application/json")
 
 	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 CTT_CUSTO, CTT_DESC01
+			SELECT CTT_CUSTO, CTT_DESC01
 			FROM %table:CTT% CTT
 			WHERE CTT.%notdel%
 				AND CTT_CLASSE = '2'
 				AND CTT_BLOQ = '2'
+				AND CTT_FILIAL = %exp:cFil%
 			ORDER BY CTT_DESC01
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% CTT_CUSTO LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% CTT_DESC01 LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 CTT_CUSTO, CTT_DESC01
+			SELECT CTT_CUSTO, CTT_DESC01
 			FROM %table:CTT% CTT
 			WHERE CTT.%notdel%
 				AND %exp:cLike%
 				AND CTT_CLASSE = '2'
 				AND CTT_BLOQ = '2'
+				AND CTT_FILIAL = %exp:cFil%
 			ORDER BY CTT_DESC01
 		EndSQL
 	EndIf
@@ -279,7 +288,7 @@ WSMETHOD GET WSSERVICE CCUSTO
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existem centro de custos cadastrados.")
@@ -334,42 +343,50 @@ Return
 WSRESTFUL ARMAZEM DESCRIPTION "Servico REST - Armazem"
 	WSDATA FILTRO As String
 	WSDATA TIPO As String
+	WSDATA FILIAL As String
 
 	WSMETHOD GET DESCRIPTION "Retorna os Centros de Custos cadastrados" WSSYNTAX "/ARMAZEM"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Armazem
-WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ARMAZEM
+WSMETHOD GET WSRECEIVE FILTRO, TIPO, FILIAL WSSERVICE ARMAZEM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oArma := Arma():New() //Objeto da classe armazem
 	Local oResponse := Arma_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
+	Local cFil := Self:FILIAL
 	Local cLike := "";
 
 	::SetContentType("application/json")
 
 	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 NNR_CODIGO, NNR_DESCRI
+			SELECT NNR_CODIGO, NNR_DESCRI
 			FROM %table:NNR% NNR
-			WHERE NNR.%notdel% ORDER BY NNR_DESCRI
+			WHERE NNR.%notdel%
+				AND NNR_FILIAL = %exp:cFil%
+			ORDER BY NNR_DESCRI
 		EndSQL
 	Else
-		If (cTipo == "COD")
+
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% NNR_CODIGO LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% NNR_DESCRI LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 NNR_CODIGO, NNR_DESCRI
+			SELECT NNR_CODIGO, NNR_DESCRI
 			FROM %table:NNR% NNR
 			WHERE NNR.%notdel%
 			AND %exp:cLike%
+			AND NNR_FILIAL = %exp:cFil%
 			ORDER BY NNR_DESCRI
 		EndSQL
 	EndIf
@@ -385,7 +402,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ARMAZEM
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existem armazem cadastrado.")
@@ -452,27 +469,29 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE UNIMED
 	Local oResponse := UM_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := "";
 
 	::SetContentType("application/json")
 
 	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 AH_UNIMED, AH_UMRES
+			SELECT AH_UNIMED, AH_UMRES
 			FROM %table:SAH% SAH
 			WHERE SAH.%notdel% ORDER BY AH_UMRES
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% AH_UNIMED LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% AH_UMRES LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 AH_UNIMED, AH_UMRES
+			SELECT AH_UNIMED, AH_UMRES
 			FROM %table:SAH% SAH
 			WHERE SAH.%notdel%
 				AND %exp:cLike%
@@ -491,7 +510,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE UNIMED
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existe unidade de medida cadastrados.")
@@ -558,28 +577,30 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE GRUPROD
 	Local oResponse := GP_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := "";
 
 	::SetContentType("application/json")
 
 	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 BM_GRUPO, BM_DESC
+			SELECT BM_GRUPO, BM_DESC
 			FROM %table:SBM% SBM
 			WHERE SBM.%notdel%
 			ORDER BY BM_DESC
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% BM_GRUPO LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% BM_DESC LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 BM_GRUPO, BM_DESC
+			SELECT BM_GRUPO, BM_DESC
 			FROM %table:SBM% SBM
 			WHERE SBM.%notdel%
 			AND %exp:cLike%
@@ -598,7 +619,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE GRUPROD
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existe grupo cadastrados.")
@@ -665,29 +686,31 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
 	Local oResponse := Origem_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := "";
 
 	::SetContentType("application/json")
 
 	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = 'S0'
 			ORDER BY X5_CHAVE
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% X5_CHAVE LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% X5_DESCRI LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = 'S0'
@@ -774,8 +797,8 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE NCM
 	Local oResponse := NCM_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := ""
 
 	::SetContentType("application/json")
@@ -788,7 +811,9 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE NCM
 			ORDER BY YD_DESC_P
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% YD_TEC LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% YD_DESC_P LIKE '%" + cFiltro + "%'%"
@@ -882,29 +907,31 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 	Local oResponse := TIPO_FULL():New() //Objeto que sera serializado
 	Local cJSON	:= ""
 	Local lRet := .T.
-	Local cFiltro := UPPER(Self:FILTRO)
-	Local cTipo := UPPER(Self:TIPO)
+	Local cFiltro := Self:FILTRO
+	Local cTipo := Self:TIPO
 	Local cLike := ""
 
 	::SetContentType("application/json")
 
 	If (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = '02'
 			ORDER BY X5_CHAVE
 		EndSQL
 	Else
-		If (cTipo == "COD")
+		cFiltro := Upper(cFiltro)
+
+		If (Upper(cTipo) == "COD")
 			cLike := "% X5_CHAVE LIKE '%" + cFiltro + "%'%"
 		Else
 			cLike := "% X5_DESCRI LIKE '%" + cFiltro + "%'%"
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 X5_CHAVE, X5_DESCRI
+			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = '02'
@@ -924,7 +951,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 			(cNextAlias)->(DbSkip())
 		EndDo
 
-		cJSON := FWJsonSerialize(oResponse, .T., .T.,,.F.)
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
 		::SetResponse(cJSON)
 	Else
 		SetRestFault(400, "Nao existe tipo de produto cadastrados.")
@@ -1058,17 +1085,17 @@ END WSRESTFUL
 //Inicio do Metodo POST do Web Service de Solicitacao de compra
 WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 	Local cJSON := Self:GetContent() // Pega a string do JSON
+	Local aArea := GetArea()
 	Local oParseJSON := Nil
-	Local aCab := {} //--> Array para ExecAuto do MATA0105
 	Local cJsonRet := ""
 	Local cArqLog := ""
 	Local cErro	:= ""
 	Local cCodSCP := ""
-	Local lRet := .T.
-	Local aArea := GetArea()
 	Local cCodResp := ""
-	local aItens := {}
-	local aAllItens := {}
+	Local lRet := .T.
+	Local aCab := {} //--> Array de cabecalho para ExecAuto do MATA0110
+	local aItens := {} //--> Array auxiliar de itens da solicitação
+	local aAllItens := {} //--> Array de itens para ExecAuto do MATA0110
 	Private lMsErroAuto := .F.
 
 	//Cria o diretorio para salvar os arquivos de log
