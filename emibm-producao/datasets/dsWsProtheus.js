@@ -48,6 +48,7 @@ function createDataset(fields, constraints, sortFields) {
 	try {
 		var constraintDados = '';
 		var constraintEndpoint = '';
+		var constraintFilial = '';
 		var constraintFiltro = '';
 		var constraintTipoFiltro = '';
 		var constraintTipoRequisicao = '';
@@ -61,6 +62,8 @@ function createDataset(fields, constraints, sortFields) {
 					constraintDados = constraints[indexConstraints].initialValue;
 				if (constraints[indexConstraints].fieldName == 'endpoint')
 					constraintEndpoint = constraints[indexConstraints].initialValue;
+				if (constraints[indexConstraints].fieldName == 'filial')
+					constraintFilial = constraints[indexConstraints].initialValue;
 				if (constraints[indexConstraints].fieldName == 'filtro')
 					constraintFiltro = constraints[indexConstraints].initialValue;
 				if (constraints[indexConstraints].fieldName == 'tipoFiltro')
@@ -72,6 +75,7 @@ function createDataset(fields, constraints, sortFields) {
 			log.warn('------------------------ Constraints dsWsProtheus ------------------------');
 			log.warn('---Debug dsWsProtheus--- constraintDados: ' + constraintDados);
 			log.warn('---Debug dsWsProtheus--- constraintEndpoint: ' + constraintEndpoint);
+			log.warn('---Debug dsWsProtheus--- constraintFilial: ' + constraintFilial);
 			log.warn('---Debug dsWsProtheus--- constraintFiltro: ' + constraintFiltro);
 			log.warn('---Debug dsWsProtheus--- constraintTipoFiltro: ' + constraintTipoFiltro);
 			log.warn('---Debug dsWsProtheus--- constraintTipoRequisicao: ' + constraintTipoRequisicao);
@@ -82,16 +86,28 @@ function createDataset(fields, constraints, sortFields) {
 			if (constraintEndpoint != '' || constraintEndpoint != null) {
 				dados = JSON.parse(
 					consultarProtheus(
-						constraintEndpoint.trim() + '',
+						constraintEndpoint == 'filial' ? 'api/framework/environment/v1/branches' : constraintEndpoint.trim() + '',
 						constraintTipoRequisicao.trim() + '',
 						constraintDados.trim() + '',
 						constraintFiltro.trim() + '',
-						constraintTipoFiltro.trim() + ''
+						constraintTipoFiltro.trim() + '',
+						constraintFilial.trim() + ''
 					)
 				);
 
 				if (dados != null) {
-					if (constraintEndpoint == 'armazem') {
+					if (constraintEndpoint == 'filial') {
+						if (dados.items != undefined) {
+							var filiais = dados.items;
+
+							dataset.addColumn('codigo');
+							dataset.addColumn('descricao');
+
+							for (var indexDados = 0; indexDados < filiais.length; indexDados++) {
+								dataset.addRow([filiais[indexDados].Code, filiais[indexDados].Description]);
+							}
+						} else mensagem = 'Nenhuma filial encontrada';
+					} else if (constraintEndpoint == 'armazem') {
 						if (dados.ARMAS != undefined) {
 							var armazens = dados.ARMAS;
 
@@ -179,6 +195,7 @@ function createDataset(fields, constraints, sortFields) {
 							mensagem = 'Não foi possível cadastrar a solicitação de compras, pois nenhum dado foi informado';
 						else {
 							if (dados.cod == 200) {
+								dataset.addColumn('solicitacao');
 								erro = false;
 								mensagem = dados.msg;
 							} else mensagem = 'Código: ' + dados.errorCode + ' - Erro: ' + dados.errorMessage;
@@ -216,7 +233,10 @@ function createDataset(fields, constraints, sortFields) {
 		if (mensagem != '') {
 			dataset.addColumn('erro');
 			dataset.addColumn('mensagem');
-			dataset.addRow([erro, mensagem]);
+			if (constraintEndpoint == 'solcomp' && dados.cod == 200)
+				dataset.addRow([erro, mensagem, dados.solicitacao]);
+			else
+				dataset.addRow([erro, mensagem]);
 		}
 
 		return dataset;
@@ -238,13 +258,19 @@ function createDataset(fields, constraints, sortFields) {
  * @param {String} dados Dados que serão gravados no Protheus.
  * @param {String} filtro Valor que será usado como filtro.
  * @param {String} tipoFiltro Tipo do valor passado como filtro.
+ * @param {String} filial Filial da empresa, usada na consulta de armazém e centro de custo.
  */
-function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro) {
+function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro, filial) {
 	if (endpoint == '' || endpoint == null) return null;
+
+	if (endpoint.indexOf('branches') == -1) {
+		endpoint += '?FILTRO=' + filtro.replace(new RegExp(' ', 'g'), '%20') + '&TIPO=' + tipoFiltro;
+		if (filial != '') endpoint += '&FILIAL=' + filial;
+	}
+
 	if (tipoRequisicao == '' || tipoRequisicao == null) tipoRequisicao = 'GET';
 
-	if (filtro != '' && tipoFiltro != '')
-		endpoint += '?FILTRO=' + filtro + '&TIPO=' + tipoFiltro;
+	log.warn('----- Debug dsWsProtheus ----- endpoint: ' + endpoint);
 
 	try {
 		var clientService = fluigAPI.getAuthorizeClientService();
@@ -267,8 +293,10 @@ function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro) 
 
 		if (vo.getResult() == null || vo.getResult().isEmpty())
 			throw new Exception('O retorno está vazio');
-		else
+		else {
+			log.warn('----- Debug dsWsProtheus ----- consultarProtheus: ' + vo.getResult());
 			return vo.getResult();
+		}
 	} catch (e) {
 		log.warn('Erro ao enviar solicitação: ' + e);
 	}
