@@ -8,7 +8,9 @@ function displayFields(form, customHTML) {
 	var constraintColleague = DatasetFactory.createConstraint('colleaguePK.colleagueId', usuarioWKUser, usuarioWKUser, ConstraintType.MUST);
 	var colleague = DatasetFactory.getDataset('colleague', null, [constraintColleague], null);
 
-	customHTML.append('<script>var ATIVIDADE = ' + atividade + '; var MOBILE = ' + formMobile + ';</script>');
+	customHTML.append('<script>var ATIVIDADE = ' + atividade + ';</script>');
+	customHTML.append('<script>var FORM_MODE = "' + formMode + '";</script>');
+	customHTML.append('<script>var MOBILE = ' + formMobile + ';</script>');
 
 	if (colleague.rowsCount > 0)
 		nomeUsuarioWKUser = colleague.getValue(0, 'colleagueName');

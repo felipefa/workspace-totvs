@@ -87,6 +87,14 @@ var beforeSendValidate = function (numState, nextState) {
 				});
 
 				return false;
+			} else {
+				FLUIGC.toast({
+					title: 'Atenção!',
+					message: 'Preencha todos os campos.',
+					type: 'warning'
+				});
+
+				return false;
 			}
 		} else if (!isEmpty(decisao)) {
 			const obsAprov = document.getElementById('obsAprov').value;
