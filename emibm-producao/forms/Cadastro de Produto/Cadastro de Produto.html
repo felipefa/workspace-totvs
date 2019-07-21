@@ -63,8 +63,9 @@
 									<input type="text" class="form-control" name="solicitacaoFluig" id="solicitacaoFluig" readonly>
 								</div>
 								<div class="form-group col-md-6">
-									<label>Motivo</label>
+									<label class="control-label" for="motivo">Motivo</label>
 									<textarea rows="1" class="form-control" name="motivo" id="motivo" style="resize: vertical;" placeholder="Informe o motivo do cadastro do produto"></textarea>
+									<p class="help-block-motivo help-block"></p>
 								</div>
 							</div>
 						</div>
@@ -86,20 +87,24 @@
 						<div class="panel-body">
 							<div class="row">
 								<div class="form-group col-md-2">
-									<label for="grupo">Grupo</label>
+									<label class="control-label" for="grupo">Grupo</label>
 									<input type="text" class="form-control" name="grupo" id="grupo" placeholder="Selecione um grupo">
+									<p class="help-block-grupo help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
-									<label for="tipo">Tipo</label>
+									<label class="control-label" for="tipo">Tipo</label>
 									<input type="text" class="form-control" name="tipo" id="tipo" placeholder="Selecione um tipo">
+									<p class="help-block-tipo help-block"></p>
 								</div>
 								<div class="form-group col-md-5">
-									<label>Descrição</label>
+									<label class="control-label" for="descricao">Descrição</label>
 									<input type="text" class="form-control" name="descricao" id="descricao" maxlength="30" placeholder="Informe a descrição" onblur="transformarDescricao(this)">
+									<p class="help-block-descricao help-block"></p>
 								</div>
 								<div class="form-group col-md-2">
-									<label for="unMedida">Unidade de Medida</label>
+									<label class="control-label" for="unMedida">Unidade de Medida</label>
 									<input type="text" class="form-control" name="unMedida" id="unMedida" placeholder="Selecione uma unidade">
+									<p class="help-block-unMedida help-block"></p>
 								</div>
 							</div>
 						</div>
@@ -141,27 +146,32 @@
 
 							<div class="row" id="camposProtheusAprov">
 								<div class="form-group col-md-3">
-									<label for="filial">Filial</label>
+									<label class="control-label" for="filial">Filial</label>
 									<input type="text" class="form-control" name="filial" id="filial" placeholder="Selecione uma filial">
+									<p class="help-block-filial help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
-									<label for="armazem">Armazém Padrão</label>
+									<label class="control-label" for="armazem">Armazém Padrão</label>
 									<input type="text" class="form-control" name="armazem" id="armazem" placeholder="Selecione um armazém">
+									<p class="help-block-armazem help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
-									<label for="posIpiNcm">Pos. IPI/NCM</label>
+									<label class="control-label" for="posIpiNcm">Pos. IPI/NCM</label>
 									<input type="text" class="form-control" name="posIpiNcm" id="posIpiNcm" placeholder="Selecione uma NCM">
+									<p class="help-block-posIpiNcm help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
-									<label for="origem">Origem</label>
+									<label class="control-label" for="origem">Origem</label>
 									<input type="text" class="form-control" name="origem" id="origem" placeholder="Selecione uma origem">
+									<p class="help-block-origem help-block"></p>
 								</div>
 							</div>
 
 							<div class="row">
 								<div class="form-group col-md-12">
-									<label>Observação</label>
+									<label class="control-label" for="obsAprov">Observação</label>
 									<textarea rows="1" class="form-control" name="obsAprov" id="obsAprov" style="resize: vertical;" placeholder="Informe o motivo pelo qual o produto foi reprovado ou necessita ajuste"></textarea>
+									<p class="help-block-obsAprov help-block"></p>
 								</div>
 							</div>
 						</div>

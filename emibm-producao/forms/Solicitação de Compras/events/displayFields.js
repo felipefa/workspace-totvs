@@ -16,12 +16,14 @@ function displayFields(form, customHTML) {
 	if (colleague.rowsCount > 0)
 		nomeUsuarioWKUser = colleague.getValue(0, 'colleagueName');
 
+	// ATIVIDADE 'INÍCIO'
 	if (atividade == 0) {
 		form.setValue('solicitante', nomeUsuarioWKUser);
 		form.setValue('matSolicitante', usuarioWKUser);
 	} else
 		form.setValue('solicitacaoFluig', numeroSolicitacao);
 
+	// ATIVIDADE 'INÍCIO'
 	if (atividade == 0 || atividade == 4) {
 		if (form.getValue('decisao') != '')
 			form.setVisibleById('painelAprovacao', true);
@@ -37,6 +39,7 @@ function displayFields(form, customHTML) {
 		}
 	}
 
+	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (atividade == 5) {
 		form.setValue('responsavelAprov', nomeUsuarioWKUser);
 		form.setValue('matGestor', usuarioWKUser);
@@ -45,6 +48,7 @@ function displayFields(form, customHTML) {
 			form.setVisibleById('painelAprovacao', false);
 	}
 
+	// ATIVIDADE NÃO É 'INÍCIO'
 	if (atividade != 0 && atividade != 4) {
 		customHTML.append('<script>');
 		customHTML.append('  $(".bpm-mobile-trash-column").hide();');
@@ -53,6 +57,7 @@ function displayFields(form, customHTML) {
 		customHTML.append('</script>');
 	}
 
+	// ATIVIDADE 'LANÇAR E FINALIZAR'
 	if (atividade == 11) {
 		form.setVisibleById('protheus', true);
 	}

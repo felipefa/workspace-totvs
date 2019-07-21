@@ -1,5 +1,31 @@
 var beforeSendValidate = function (numState, nextState) {
 	const loading = FLUIGC.loading(window);
+
+	// ATIVIDADE 'INÍCIO'
+	if (numState == 0 || numState == 4) {
+		let vazio = false;
+
+		$('input, select, textarea').not('readonly, :hidden').each(function () {
+			const elemento = $(this);
+			if (isEmpty(elemento.val()) && !elemento.prop('readonly')) {
+				elemento.blur();
+				vazio = true;
+			}
+		});
+
+		if (vazio) {
+			FLUIGC.toast({
+				title: 'Atenção!',
+				message: 'Preencha todos os campos.',
+				type: 'warning'
+			});
+
+			return false;
+		}
+
+		return true;
+	}
+
 	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (numState == 5) {
 		const decisao = document.getElementById('decisao').value;
@@ -9,12 +35,14 @@ var beforeSendValidate = function (numState, nextState) {
 		if (decisao == 'Aprovado') {
 			const dtNecessidade = document.getElementById('dtNecessidade').value;
 			const localNecessidade = document.getElementById('localNecessidade').value;
+			const filial = document.getElementById('codFilial').value;
 			const centroCusto = document.getElementById('codCentroCusto').value;
 			const motivo = document.getElementById('motivo').value;
 			const quantidadeItens = $('[id^=item___]').length;
 
 			if (!isEmpty(dtNecessidade) &&
 				!isEmpty(localNecessidade) &&
+				!isEmpty(filial) &&
 				!isEmpty(centroCusto) &&
 				!isEmpty(motivo) &&
 				quantidadeItens != 0) {
@@ -38,7 +66,8 @@ var beforeSendValidate = function (numState, nextState) {
 				const dados = JSON.stringify({
 					'OBJETO': {
 						'CC': centroCusto,
-						'MOTIVO': dtNecessidade.split('-')[2] + '/' + dtNecessidade.split('-')[1] + '/' + dtNecessidade.split('-')[0],
+						'FIL': filial,
+						'MOTIVO': transformarDataEmBr(dtNecessidade),
 						'ITENS': itens
 					}
 				});

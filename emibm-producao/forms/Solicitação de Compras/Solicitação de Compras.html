@@ -10,7 +10,6 @@
 	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
 	<script type="text/javascript" src="scripts.js" charset="utf-8"></script>
 	<script type="text/javascript" src="validate.js" charset="utf-8"></script>
-	<script type="text/javascript" src="zoom.js" charset="utf-8"></script>
 </head>
 
 <style>
@@ -45,31 +44,37 @@
 				<div class="panel panel-default" id="painelDadosSolic">
 					<div class="panel-heading">
 						<h5 class="panel-title">
-							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionOne" href="#collapseOne">Dados da Solicitação</a>
+							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionOne" href="#collapseOne">
+								<span class="fluigicon fluigicon-info-sign"></span> Dados da Solicitação
+							</a>
 						</h5>
 					</div>
 					<div id="collapseOne" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
-								<div class="form-group col-md-3">
+								<div class="form-group col-md-2">
 									<label>Data da Solicitação</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
-										<input type="date" class="form-control" name="dtSolicitacao" id="dtSolicitacao" readonly>
-									</div>
+									<input type="date" class="form-control" name="dtSolicitacao" id="dtSolicitacao" readonly>
 								</div>
-								<div class="form-group col-md-3">
+								<div class="form-group col-md-2">
 									<label>Solicitante</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
-										<input type="text" class="form-control" name="solicitante" id="solicitante" readonly>
-									</div>
+									<input type="text" class="form-control" name="solicitante" id="solicitante" readonly>
 								</div>
-								<div class="form-group col-md-3">
+								<div class="form-group col-md-2">
 									<label>Solicitação Fluig</label>
 									<input type="text" class="form-control" name="solicitacaoFluig" id="solicitacaoFluig" readonly>
 								</div>
-								<div class="form-group col-md-3" id="protheus" style="display: none;">
+								<div class="form-group col-md-2">
+									<label class="control-label">Data da Necessidade</label>
+									<input type="date" class="form-control" name="dtNecessidade" id="dtNecessidade">
+									<p class="help-block-dtNecessidade help-block"></p>
+								</div>
+								<div class="form-group col-md-2">
+									<label class="control-label" for="localNecessidade">Local da Necessidade</label>
+									<input type="text" class="form-control" name="localNecessidade" id="localNecessidade" maxlength="25" placeholder="Informe o local">
+									<p class="help-block-localNecessidade help-block"></p>
+								</div>
+								<div class="form-group col-md-2" id="protheus" style="display: none;">
 									<label>Solicitação Protheus</label>
 									<input type="text" class="form-control" name="solicitacaoProtheus" id="solicitacaoProtheus" readonly>
 								</div>
@@ -77,38 +82,19 @@
 
 							<div class="row">
 								<div class="form-group col-md-3">
-									<label>Data da Necessidade</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
-										<input type="date" class="form-control" name="dtNecessidade" id="dtNecessidade">
-									</div>
-								</div>
-								<div class="form-group col-md-3">
-									<label class="control-label" for="localNecessidade">Local da Necessidade</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-map-marker"></span></span>
-										<input type="text" class="form-control" name="localNecessidade" id="localNecessidade" maxlength="25" placeholder="Informe o local da necessidade">
-									</div>
-									<p class="help-block-localNecessidade help-block"></p>
-								</div>
-								<div class="form-group col-md-3">
 									<label class="control-label" for="filial">Filial</label>
 									<input type="text" class="form-control" id="filial" name="filial" placeholder="Selecione uma filial">
 									<p class="help-block-filial help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
-									<label for="centroCusto">Centro de Custo</label>
+									<label class="control-label" for="centroCusto">Centro de Custo</label>
 									<input type="text" class="form-control" id="centroCusto" name="centroCusto" placeholder="Selecione um centro de custo">
+									<p class="help-block-centroCusto help-block"></p>
 								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group col-md-12">
-									<label>Motivo</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-										<input class="form-control" name="motivo" id="motivo" maxlength="50" placeholder="Informe o motivo da solicitação">
-									</div>
+								<div class="form-group col-md-6">
+									<label class="control-label">Motivo</label>
+									<input class="form-control" name="motivo" id="motivo" maxlength="50" placeholder="Informe o motivo da solicitação">
+									<p class="help-block-motivo help-block"></p>
 								</div>
 							</div>
 						</div>
@@ -121,13 +107,15 @@
 				<div class="panel panel-default" id="painelItens">
 					<div class="panel-heading">
 						<h5 class="panel-title">
-							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseTwo">Itens</a>
+							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseTwo">
+								<span class="fluigicon fluigicon-tag"></span> Itens
+							</a>
 						</h5>
 					</div>
 					<div id="collapseTwo" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
-								<table class="col-xs-12" id="tableItens" tablename="itens" noaddbutton="true" customFnDelete="removerItem(this)">
+								<table class="col-xs-12" id="tableItens" tablename="itens" noaddbutton="true" nodeletebutton="true">
 									<thead>
 										<tr>
 											<th class="tableColumn"></th>
@@ -138,31 +126,30 @@
 											<td class="fs-v-align-middle">
 												<input type="hidden" name="codItem" id="codItem">
 												<div class="form-group col-xs-12 col-md-3">
-													<label for="item">Item</label>
-													<input type="text" class="form-control" name="item" id="item" placeholder="Selecione um produto">
+													<label class="control-label" for="item">Item</label>
+													<input type="text" class="form-control" name="item" id="item" placeholder="Selecione um produto" onblur="verificarItem(this)">
+													<p class="help-block" name="hb_item" id="hb_item"></p>
 												</div>
 												<div class="form-group col-xs-12 col-md-2">
 													<label>Unidade de Medida</label>
-													<div class="input-group">
-														<span class="input-group-addon"><span class="fluigicon fluigicon-query-gap"></span></span>
-														<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
-													</div>
+													<input type="text" class="form-control" name="unMedida" id="unMedida" readonly>
 												</div>
 												<div class="form-group col-xs-12 col-md-2">
-													<label>Quantidade</label>
-													<div class="input-group">
-														<span class="input-group-addon"><span class="fluigicon fluigicon-volumes"></span></span>
-														<input type="number" class="form-control" name="quantidade" id="quantidade" maxlength="30" placeholder="Informe a qtd." step="1" min="1" onblur="verificarQuantidade(this)">
-													</div>
+													<label class="control-label" for="quantidade">Quantidade</label>
+													<input type="number" class="form-control" name="quantidade" id="quantidade" maxlength="30" placeholder="Informe a quantidade" step="1" min="1" onblur="verificarQuantidade(this)">
+													<p class="help-block" name="hb_quantidade" id="hb_quantidade"></p>
 												</div>
-												<div class="form-group col-xs-12 col-md-5">
+												<div class="form-group col-xs-12 col-md-4">
 													<label>Observação</label>
-													<div class="input-group">
-														<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-														<textarea rows="1" class="form-control" name="obsItem" id="obsItem" maxlength="50" style="resize: vertical;" placeholder="Informe uma observação para o item"></textarea>
-													</div>
+													<textarea rows="1" class="form-control" name="obsItem" id="obsItem" maxlength="50" style="resize: vertical;" placeholder="Informe uma observação para o item"></textarea>
 												</div>
-												<hr id="hrItens">
+												<div class="form-group col-xs-12 col-md-1 bpm-mobile-trash-column">
+													<label><br></label><br>
+													<button class="btn btn-danger" onclick="removerItem(this)">Excluir</button>
+												</div>
+												<div class="col-xs-12">
+													<hr id="hrItens">
+												</div>
 											</td>
 										</tr>
 									</tbody>
@@ -189,46 +176,38 @@
 				<div class="panel panel-default" id="painelAprovacao">
 					<div class="panel-heading">
 						<h5 class="panel-title">
-							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionThree" href="#collapseThree">Aprovação</a>
+							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordionThree" href="#collapseThree">
+								<span class="fluigicon fluigicon-card-index-approval"></span> Aprovação
+							</a>
 						</h5>
 					</div>
 					<div id="collapseThree" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
 								<div class="form-group col-md-3">
-									<label>Decisão</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-list"></span></span>
-										<select class="form-control" id="decisao" name="decisao">
-											<option value="" disabled selected>Selecione uma opção</option>
-											<option value="Aprovado">Aprovado</option>
-											<option value="Reprovado">Reprovado</option>
-											<option value="Ajustar">Ajustar</option>
-										</select>
-									</div>
+									<label class="control-label">Decisão</label>
+									<select class="form-control" id="decisao" name="decisao">
+										<option value="" disabled selected>Selecione uma opção</option>
+										<option value="Aprovado">Aprovado</option>
+										<option value="Reprovado">Reprovado</option>
+										<option value="Ajustar">Ajustar</option>
+									</select>
+									<p class="help-block-decisao help-block"></p>
 								</div>
 								<div class="form-group col-md-3">
 									<label>Data</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-calendar"></span></span>
-										<input type="date" class="form-control" name="dtAprov" id="dtAprov" readonly>
-									</div>
+									<input type="date" class="form-control" name="dtAprov" id="dtAprov" readonly>
 								</div>
 								<div class="form-group col-md-6">
 									<label>Responsável</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-user"></span></span>
-										<input type="text" class="form-control" name="responsavelAprov" id="responsavelAprov" readonly>
-									</div>
+									<input type="text" class="form-control" name="responsavelAprov" id="responsavelAprov" readonly>
 								</div>
 							</div>
 							<div class="row">
 								<div class="form-group col-md-12">
-									<label>Observação</label>
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fluigicon fluigicon-comment"></span></span>
-										<textarea rows="2" class="form-control" name="obsAprov" id="obsAprov" style="resize: vertical;" placeholder="Informe o motivo pela qual a solicitação foi reprovada ou necessita ajuste"></textarea>
-									</div>
+									<label class="control-label">Observação</label>
+									<textarea rows="1" class="form-control" name="obsAprov" id="obsAprov" style="resize: vertical;" placeholder="Informe o motivo pela qual a solicitação foi reprovada ou necessita ajuste"></textarea>
+									<p class="help-block-obsAprov help-block"></p>
 								</div>
 							</div>
 						</div>

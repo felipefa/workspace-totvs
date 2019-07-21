@@ -19,7 +19,7 @@ function validateForm(form) {
 			msg += '<br/>Informe a unidade de medida do produto';
 	}
 
-	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
+	// ATIVIDADE 'APROVAR CADASTRO'
 	if (atividade == 5) {
 		// PAINEL 'APROVAÇÃO'
 		if (form.getValue('decisao') == '' || form.getValue('decisao') == null)

@@ -8,7 +8,7 @@ function enableFields(form) {
 		form.setEnabled('obsAprov', false);
 	}
 
-	// ATIVIDADE 'APROVAR REQUISIÇÃO'
+	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (atividade == 5) {
 		// PAINEL 'DADOS DA SOLICITAÇÃO'
 		form.setEnabled('dtNecessidade', false);

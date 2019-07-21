@@ -46,7 +46,7 @@ function validateForm(form) {
 		}
 	}
 
-	// ATIVIDADE 'APROVAR REQUISIÇÃO'
+	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (atividade == 5) {
 		// PAINEL 'APROVAÇÃO'
 		if (form.getValue('decisao') == '' || form.getValue('decisao') == null)

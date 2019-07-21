@@ -5,14 +5,12 @@ $(() => {
 	const day = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
 	const currentDate = `${year}-${month}-${day}`;
 
+	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0)
 		document.getElementById('dtSolicitacao').value = currentDate;
 
+	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0 || ATIVIDADE == 4) {
-		instanciarAutocomplete('grupo');
-		instanciarAutocomplete('tipo');
-		instanciarAutocomplete('unMedida');
-
 		if (FORM_MODE == 'VIEW') {
 			const decisao = document.getElementById('decisao').innerHTML;
 			const dtSolicitacao = document.getElementById('dtSolicitacao').innerHTML;
@@ -24,9 +22,32 @@ $(() => {
 				document.getElementById('dtAprov').innerHTML = transformarDataEmBr(dtAprov);
 				$('#camposProtheusAprov').hide();
 			}
+		} else {
+			instanciarAutocomplete('grupo');
+			instanciarAutocomplete('tipo');
+			instanciarAutocomplete('unMedida');
+
+			$('#motivo').blur(function () {
+				const id = 'motivo';
+
+				if ($(this).val() == '')
+					mostrarLabelErro(id, true, 'Informe o motivo da solicitação de compras.');
+				else
+					mostrarLabelErro(id, false, '');
+			});
+
+			$('#descricao').blur(function () {
+				const id = 'descricao';
+
+				if ($(this).val() == '')
+					mostrarLabelErro(id, true, 'Informe uma descrição para o produto.');
+				else
+					mostrarLabelErro(id, false, '');
+			});
 		}
 	}
 
+	// ATIVIDADE 'APROVAR CADASTRO'
 	if (ATIVIDADE == 5) {
 		const decisao = document.getElementById('decisao');
 
@@ -43,8 +64,29 @@ $(() => {
 			document.getElementById('dtAprov').innerHTML = `${day}/${month}/${year}`;
 		}
 	}
+
+	// ATIVIDADES 'CADASTRAR E FINALIZAR' OU 'CANCELAR E FINALIZAR'
+	if (ATIVIDADE == 9 || ATIVIDADE == 11) {
+		if (FORM_MODE == 'VIEW') {
+			const decisao = document.getElementById('decisao').innerHTML;
+			const dtAprov = document.getElementById('dtAprov').innerHTML;
+			const dtSolicitacao = document.getElementById('dtSolicitacao').innerHTML;
+
+			document.getElementById('dtSolicitacao').innerHTML = transformarDataEmBr(dtSolicitacao);
+			document.getElementById('dtAprov').innerHTML = transformarDataEmBr(dtAprov);
+
+			if (decisao == 'Reprovado')
+				$('#camposProtheusAprov').hide();
+		}
+	}
 });
 
+/**
+ * Busca os dados do Protheus de acordo com o campo e o valor informados.
+ *
+ * @param {String} id Id do input que receberá o autocomplete.
+ * @param {String} filtro Valor que deve ser buscado no Protheus.
+ */
 const buscarDados = (id, filtro) => {
 	const dados = [];
 	let endpoint = '';
@@ -95,22 +137,23 @@ const buscarDados = (id, filtro) => {
 		});
 
 		if (id = 'filial')
-			mostrarLabelErro('filial', false, '', 'warning');
+			mostrarLabelErro('filial', false, '');
 
 	} else {
-		if (id == 'armazem') {
-			FLUIGC.toast({
-				title: 'Atenção!',
-				message: `Não existem armazéns para a filial: ${$('#filial').val()}.`,
-				type: 'warning'
-			});
-		} else if (id == 'filial')
-			mostrarLabelErro('filial', true, 'Nenhuma filial encontrada.', 'warning');
+		if (id == 'armazem')
+			mostrarLabelErro(id, true, `Não existem armazéns para a filial: ${$('#filial').val()}.`);
+		else if (id == 'filial')
+			mostrarLabelErro('filial', true, 'Nenhuma filial encontrada.');
 	}
 
 	return dados;
 }
 
+/**
+ * Instancia um autocomplete em um input do tipo text de acordo com o id informado.
+ *
+ * @param {String} id Id do input onde deve ser instanciado um autocomplete.
+ */
 const instanciarAutocomplete = (id) => {
 	const elemento = $('#' + id);
 	let position = {
@@ -135,6 +178,11 @@ const instanciarAutocomplete = (id) => {
 			select: (evento, dado) => {
 				elemento.val(dado.item.descricao);
 				setInputCodigo(id, dado.item.codigo);
+				mostrarLabelErro(id, false, '');
+
+				if (id == 'filial')
+					$('#armazem').val('');
+
 				return false;
 			},
 			close: (evento) => {
@@ -144,24 +192,15 @@ const instanciarAutocomplete = (id) => {
 					elemento.val('');
 					setInputCodigo(id, '');
 
-					if (evento.handleObj.type != 'input') {
-						FLUIGC.toast({
-							title: 'Atenção!',
-							message: 'Uma opção de ' + campo + ' deve ser selecionada.',
-							type: 'warning'
-						});
-					}
+					if (evento.handleObj.type != 'input')
+						mostrarLabelErro(id, true, `Uma opção de ${campo} deve ser selecionada.`);
 				}
 			},
 		}).click(() => {
 			const filial = document.getElementById('codFilial').value;
 
 			if (id == 'armazem' && filial == '') {
-				FLUIGC.toast({
-					title: 'Atenção!',
-					message: 'Selecione uma filial.',
-					type: 'warning'
-				});
+				mostrarLabelErro('filial', true, 'Selecione uma filial.');
 			} else {
 				const valorElemento = elemento.val();
 				elemento.autocomplete('search', valorElemento == '' ? ' ' : valorElemento);
@@ -193,14 +232,14 @@ const isEmpty = (value) => {
  * @return {void} retorno vazio.
  */
 function mostrarLabelErro(elemento, bool, text) {
-    if (bool) {
-        $(`.help-block-${elemento}`).text(text)
-        $(`#${elemento}`).parent().addClass('has-error');
-        $(`.help-block-${elemento}`).show();
-    } else {
-        $(`#${elemento}`).parent().removeClass('has-error');
-        $(`.help-block-${elemento}`).hide();
-    }
+	if (bool) {
+		$(`.help-block-${elemento}`).text(text)
+		$(`#${elemento}`).parent().addClass('has-error');
+		$(`.help-block-${elemento}`).show();
+	} else {
+		$(`#${elemento}`).parent().removeClass('has-error');
+		$(`.help-block-${elemento}`).hide();
+	}
 }
 
 /**
@@ -258,7 +297,7 @@ const transformarDescricao = (input) => {
  * Libera os campos Armazém, Pos. IPI/NCM e Origem para preenchimento caso o cadastro esteja aprovado.
  * Senão bloqueia esses campos e remove seus valores.
  *
- * @param {Object} select Elemento do DOM que possui a opção escolhida pelo usuário
+ * @param {Object} select Elemento do DOM que possui a opção escolhida pelo usuário.
  */
 const verificarDecisao = (select) => {
 	if (select.value == 'Aprovado') {

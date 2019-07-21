@@ -15,6 +15,7 @@ function displayFields(form, customHTML) {
 	if (colleague.rowsCount > 0)
 		nomeUsuarioWKUser = colleague.getValue(0, 'colleagueName');
 
+	// ATIVIDADE 'INÍCIO'
 	if (atividade == 0) {
 		form.setValue('solicitante', nomeUsuarioWKUser);
 		form.setValue('matSolicitante', usuarioWKUser);
@@ -26,6 +27,7 @@ function displayFields(form, customHTML) {
 	} else
 		form.setValue('solicitacaoFluig', numeroSolicitacao);
 
+	// ATIVIDADE 'APROVAR CADASTRO'
 	if (atividade == 5) {
 		form.setValue('responsavelAprov', nomeUsuarioWKUser);
 		form.setValue('matGestor', usuarioWKUser);

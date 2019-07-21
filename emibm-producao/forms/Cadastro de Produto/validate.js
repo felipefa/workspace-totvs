@@ -43,6 +43,9 @@ var beforeSendValidate = function (numState, nextState) {
 			const posIpiNcm = document.getElementById('codPosIpiNcm').value;
 			const origem = document.getElementById('codOrigem').value;
 
+			// remove label error obs caso aprovado
+			mostrarLabelErro('obsAprov', false, '');
+
 			if (!isEmpty(grupo) &&
 				!isEmpty(tipo) &&
 				!isEmpty(descricao) &&
@@ -97,16 +100,12 @@ var beforeSendValidate = function (numState, nextState) {
 				return false;
 			}
 		} else if (!isEmpty(decisao)) {
-			const obsAprov = document.getElementById('obsAprov').value;
+			const id = 'obsAprov';
+			const obsAprov = document.getElementById(id).value;
 
 			if (isEmpty(obsAprov)) {
 				const mensagem = MOBILE != null && MOBILE ? 'Preencha a observação da aprovação.' : 'Preencha o motivo da decisão escolhida na aprovação.';
-
-				FLUIGC.toast({
-					title: 'Atenção!',
-					message: mensagem,
-					type: 'warning'
-				});
+				mostrarLabelErro(id, true, mensagem);
 
 				return false;
 			}
