@@ -234,7 +234,7 @@ function createDataset(fields, constraints, sortFields) {
 			dataset.addColumn('erro');
 			dataset.addColumn('mensagem');
 			if (constraintEndpoint == 'solcomp' && dados.cod == 200)
-				dataset.addRow([erro, mensagem, dados.solicitacao]);
+				dataset.addRow([dados.solicitacao, erro, mensagem]);
 			else
 				dataset.addRow([erro, mensagem]);
 		}
@@ -263,12 +263,12 @@ function createDataset(fields, constraints, sortFields) {
 function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro, filial) {
 	if (endpoint == '' || endpoint == null) return null;
 
-	if (endpoint.indexOf('branches') == -1) {
+	if (tipoRequisicao == '' || tipoRequisicao == null) tipoRequisicao = 'GET';
+
+	if (endpoint.indexOf('branches') == -1 && tipoRequisicao == 'GET') {
 		endpoint += '?FILTRO=' + filtro.replace(new RegExp(' ', 'g'), '%20') + '&TIPO=' + tipoFiltro;
 		if (filial != '') endpoint += '&FILIAL=' + filial;
 	}
-
-	if (tipoRequisicao == '' || tipoRequisicao == null) tipoRequisicao = 'GET';
 
 	log.warn('----- Debug dsWsProtheus ----- endpoint: ' + endpoint);
 
