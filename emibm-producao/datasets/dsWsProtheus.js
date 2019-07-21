@@ -5,6 +5,7 @@
  *
  * Constraints:
  * - 'endpoint': Obrigatoriamente deve ser informado pelo menos o endpoint de consulta ao Protheus.
+ * - 'filial': Deve ser usada apenas na buscar de centro de custo ou armazém;
  * - 'filtro': Parte do código ou descrição do item que será buscado no Protheus;
  * - 'tipoFiltro': Tipo do valor passado no filtro, sendo aceitos 'cod' ou 'desc'.
  * - 'tipoRequisicao': Caso o tipo de requisição não seja informado, o seu valor padrão será GET.
