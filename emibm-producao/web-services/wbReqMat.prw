@@ -1113,12 +1113,12 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 	//Monta itens da solicitacao
 	For nI := 1 to len(oParseJSON:OBJETO:ITENS)
 		aItens := {}
-		Aadd(aItens,{"C1_ITEM", StrZero(VAL(oParseJSON:OBJETO:ITENS[nI]:ITEM), (TamSX3("C1_ITEM")[1])), Nil})
-		Aadd(aItens,{"C1_PRODUTO", oParseJSON:OBJETO:ITENS[nI]:PRODUTO, Nil})
+		Aadd(aItens,{"C1_ITEM", StrZero(VAL(oParseJSON:OBJETO:ITENS[nI]:ITEM), TamSX3("C1_ITEM")[1]), Nil})
+		Aadd(aItens,{"C1_PRODUTO", PadR(Alltrim(oParseJSON:OBJETO:ITENS[nI]:PRODUTO), TamSX3("C1_PRODUTO")[1]), Nil})
 		Aadd(aItens,{"C1_QUANT", VAL(oParseJSON:OBJETO:ITENS[nI]:QUANT), Nil})
-		Aadd(aItens,{"C1_OBS", DecodeUTF8(oParseJSON:OBJETO:ITENS[nI]:OBS + oParseJSON:OBJETO:CC, "cp1252"), Nil})
+		Aadd(aItens,{"C1_OBS", DecodeUTF8(oParseJSON:OBJETO:ITENS[nI]:OBS, "cp1252"), Nil})
 		Aadd(aItens,{"C1_DATPRF", CtoD(oParseJSON:OBJETO:MOTIVO), Nil})
-		Aadd(aItens,{"C1_CC", PadR(Alltrim(oParseJSON:OBJETO:CC),TamSX3("C1_CC")[1]), Nil})
+		Aadd(aItens,{"C1_CC", PadR(Alltrim(oParseJSON:OBJETO:CC), TamSX3("C1_CC")[1]), Nil})
 		Aadd(aAllItens, aItens)
 	Next
 
@@ -1136,7 +1136,7 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 		cJSONRet := '{"cod": "200"';
 				   + ', "sucesso":"TRUE"';
 				   + ', "msg":"Solicitação cadastrada com sucesso!"';
-				   + ', "solicitacao":"' + SC1->C1_NUM + '"';
+				   + ', "solicitacao":"' + EncodeUTF8(SC1->C1_NUM, "cp1252") + '"';
 				   + '}'
 
 		::SetResponse(cJSONRet)
