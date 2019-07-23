@@ -5,7 +5,7 @@
  *
  * Constraints:
  * - 'endpoint': Obrigatoriamente deve ser informado pelo menos o endpoint de consulta ao Protheus.
- * - 'filial': Deve ser usada apenas na buscar de centro de custo ou armazém;
+ * - 'filial': Deve ser usada apenas na buscar de centro de custo, armazém ou tipo de produto;
  * - 'filtro': Parte do código ou descrição do item que será buscado no Protheus;
  * - 'tipoFiltro': Tipo do valor passado no filtro, sendo aceitos 'cod' ou 'desc'.
  * - 'tipoRequisicao': Caso o tipo de requisição não seja informado, o seu valor padrão será GET.
@@ -140,7 +140,7 @@ function createDataset(fields, constraints, sortFields) {
 							for (var indexDados = 0; indexDados < grupos.length; indexDados++) {
 								dataset.addRow([grupos[indexDados].GRUPO, grupos[indexDados].DESC]);
 							}
-						} else mensagem = 'Nenhum tipo de produto encontrado';
+						} else mensagem = 'Nenhum grupo de produto encontrado';
 					} else if (constraintEndpoint == 'ncm') {
 						if (dados.NCMS != undefined) {
 							var ncms = dados.NCMS;
