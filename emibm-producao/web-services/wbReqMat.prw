@@ -603,7 +603,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE GRUPROD
 			SELECT BM_GRUPO, BM_DESC
 			FROM %table:SBM% SBM
 			WHERE SBM.%notdel%
-			AND %exp:cLike%
+				AND %exp:cLike%
 			ORDER BY BM_DESC
 		EndSQL
 	EndIf
@@ -674,12 +674,13 @@ Return
 WSRESTFUL ORIGEM DESCRIPTION "Servico REST - Origem do produto"
 	WSDATA FILTRO As String
 	WSDATA TIPO As String
+	WSDATA FILIAL As String
 
 	WSMETHOD GET DESCRIPTION "Retorna os cadastrado de Origem de Produto" WSSYNTAX "/ORIGEM?{FILTRO}&{TIPO}"
 END WSRESTFUL
 
 //Inicio do Metodo GET do Web Service de Origem
-WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
+WSMETHOD GET WSRECEIVE FILTRO, TIPO, FILIAL WSSERVICE ORIGEM
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oOrigem := Origem():New() //Objeto da classe Origem
@@ -688,6 +689,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
 	Local lRet := .T.
 	Local cFiltro := Self:FILTRO
 	Local cTipo := Self:TIPO
+	Local cFil := Self:FILIAL
 	Local cLike := "";
 
 	::SetContentType("application/json")
@@ -698,6 +700,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = 'S0'
+				AND X5_FILIAL = %exp:cFil%
 			ORDER BY X5_CHAVE
 		EndSQL
 	Else
@@ -714,6 +717,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE ORIGEM
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
 				AND X5_TABELA = 'S0'
+				AND X5_FILIAL = %exp:cFil%
 				AND %exp:cLike%
 			ORDER BY X5_CHAVE
 		EndSQL
@@ -894,13 +898,14 @@ Return
 WSRESTFUL TIPOPROD DESCRIPTION "Servico REST - Tipos de Produto"
 	WSDATA FILTRO As String
 	WSDATA TIPO As String
+	WSDATA FILIAL As String
 
 	WSMETHOD GET DESCRIPTION "Retorna os Tipo de Produtos cadastrados" WSSYNTAX "/TIPOPROD?{FILTRO}&{TIPO}"
 END WSRESTFUL
 //Fim da Declaracao do Web Service
 
 //Inicio do Metodo GET do Web Service de Tipo de Produto
-WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
+WSMETHOD GET WSRECEIVE FILTRO, TIPO, FILIAL WSSERVICE TIPOPROD
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oTipo := TIPO():New() //Objeto da classe tipo
@@ -909,6 +914,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 	Local lRet := .T.
 	Local cFiltro := Self:FILTRO
 	Local cTipo := Self:TIPO
+	Local cFil := Self:FILIAL
 	Local cLike := ""
 
 	::SetContentType("application/json")
@@ -918,6 +924,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
+				AND X5_FILIAL = %exp:cFil%
 				AND X5_TABELA = '02'
 			ORDER BY X5_CHAVE
 		EndSQL
@@ -934,6 +941,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE TIPOPROD
 			SELECT X5_CHAVE, X5_DESCRI
 			FROM  %Table:SX5% SX5
 			WHERE SX5.%NotDel%
+				AND X5_FILIAL = %exp:cFil%
 				AND X5_TABELA = '02'
 				AND %exp:cLike%
 			ORDER BY X5_CHAVE
