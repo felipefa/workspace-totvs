@@ -1,13 +1,7 @@
 $(() => {
-	const today = new Date();
-	const year = today.getFullYear();
-	const month = (today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1);
-	const day = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
-	const currentDate = `${year}-${month}-${day}`;
-
 	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0)
-		document.getElementById('dtSolicitacao').value = currentDate;
+		document.getElementById('dtSolicitacao').value = getDataAtual();
 
 	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0 || ATIVIDADE == 4) {
@@ -23,8 +17,8 @@ $(() => {
 				$('#camposProtheusAprov').hide();
 			}
 		} else {
-			instanciarAutocomplete('grupo');
-			instanciarAutocomplete('tipo');
+			$('#camposProtheusAprov').hide();
+
 			instanciarAutocomplete('unMedida');
 
 			$('#motivo').blur(function () {
@@ -49,19 +43,21 @@ $(() => {
 
 	// ATIVIDADE 'APROVAR CADASTRO'
 	if (ATIVIDADE == 5) {
-		const decisao = document.getElementById('decisao');
-
-		document.getElementById('dtAprov').value = currentDate;
-		instanciarAutocomplete('filial');
-		instanciarAutocomplete('armazem');
-		instanciarAutocomplete('posIpiNcm');
-		instanciarAutocomplete('origem');
-		verificarDecisao(decisao);
-
 		if (FORM_MODE == 'VIEW') {
 			const dtSolicitacao = document.getElementById('dtSolicitacao').innerHTML;
 			document.getElementById('dtSolicitacao').innerHTML = transformarDataEmBr(dtSolicitacao);
-			document.getElementById('dtAprov').innerHTML = `${day}/${month}/${year}`;
+			document.getElementById('dtAprov').innerHTML = getDataAtual('dd/mm/yyyy');
+		} else {
+			const decisao = document.getElementById('decisao');
+
+			document.getElementById('dtAprov').value = getDataAtual();
+			instanciarAutocomplete('filial');
+			instanciarAutocomplete('grupo');
+			instanciarAutocomplete('tipo');
+			instanciarAutocomplete('armazem');
+			instanciarAutocomplete('posIpiNcm');
+			instanciarAutocomplete('origem');
+			verificarDecisao(decisao);
 		}
 	}
 
@@ -98,6 +94,7 @@ const buscarDados = (id, filtro) => {
 			break;
 		case 'tipo':
 			endpoint = 'tipoprod';
+			filial = document.getElementById('codFilial').value;
 			break;
 		case 'unMedida':
 			endpoint = 'unimed';
@@ -114,6 +111,7 @@ const buscarDados = (id, filtro) => {
 			break;
 		case 'origem':
 			endpoint = 'origem';
+			filial = document.getElementById('codFilial').value;
 			break;
 	}
 
@@ -142,11 +140,32 @@ const buscarDados = (id, filtro) => {
 	} else {
 		if (id == 'armazem')
 			mostrarLabelErro(id, true, `Não existem armazéns para a filial: ${$('#filial').val()}.`);
+		else if (id == 'tipo')
+			mostrarLabelErro(id, true, `Não existem tipos de produto para a filial: ${$('#filial').val()}.`);
 		else if (id == 'filial')
 			mostrarLabelErro('filial', true, 'Nenhuma filial encontrada.');
 	}
 
 	return dados;
+}
+
+/**
+ * Retorna a data atual no formato informado.
+ *
+ * @param {String} formato String com o formato de retorno da data, podendo ser:
+ *  - 'yyyy-mm-dd' (formato padrão)
+ *  - 'dd/mm/yyyy'
+ */
+const getDataAtual = (formato = 'yyyy-mm-dd') => {
+	const hoje = new Date();
+	const ano = hoje.getFullYear();
+	const mes = (hoje.getMonth() + 1) < 10 ? '0' + (hoje.getMonth() + 1) : (hoje.getMonth() + 1);
+	const dia = hoje.getDate() < 10 ? '0' + hoje.getDate() : hoje.getDate();
+
+	if (formato == 'yyyy-mm-dd')
+		return `${ano}-${mes}-${dia}`;
+	else if (formato == 'dd/mm/yyyy')
+		return `${dia}/${mes}/${ano}`;
 }
 
 /**
@@ -156,15 +175,18 @@ const buscarDados = (id, filtro) => {
  */
 const instanciarAutocomplete = (id) => {
 	const elemento = $('#' + id);
+
+	// Posição padrão das lista de opções do autocomplete abrindo abaixo do campo
 	let position = {
-		my: 'left bottom',
-		at: 'left top'
+		my: 'left top',
+		at: 'left bottom'
 	};
 
-	if (MOBILE != null && MOBILE) {
+	if (ATIVIDADE == 0 && !MOBILE) {
+		// Lista de opções do autocomplete abrindo acima do campo
 		position = {
-			my: 'left top',
-			at: 'left bottom'
+			my: 'left bottom',
+			at: 'left top'
 		};
 	}
 
@@ -180,8 +202,14 @@ const instanciarAutocomplete = (id) => {
 				setInputCodigo(id, dado.item.codigo);
 				mostrarLabelErro(id, false, '');
 
-				if (id == 'filial')
+				if (id == 'filial') {
 					$('#armazem').val('');
+					$('#codArmazem').val('');
+					$('#tipo').val('');
+					$('#codTipo').val('');
+					$('#origem').val('');
+					$('#codOrigem').val('');
+				}
 
 				return false;
 			},
@@ -199,7 +227,7 @@ const instanciarAutocomplete = (id) => {
 		}).click(() => {
 			const filial = document.getElementById('codFilial').value;
 
-			if (id == 'armazem' && filial == '') {
+			if ((id == 'armazem' || id == 'tipo' || id == 'origem') && filial == '') {
 				mostrarLabelErro('filial', true, 'Selecione uma filial.');
 			} else {
 				const valorElemento = elemento.val();
@@ -294,23 +322,26 @@ const transformarDescricao = (input) => {
 }
 
 /**
- * Libera os campos Armazém, Pos. IPI/NCM e Origem para preenchimento caso o cadastro esteja aprovado.
+ * Libera os campos Filial, Grupo, Tipo, Armazém, Pos. IPI/NCM e Origem para preenchimento caso o cadastro esteja aprovado.
  * Senão bloqueia esses campos e remove seus valores.
  *
  * @param {Object} select Elemento do DOM que possui a opção escolhida pelo usuário.
  */
 const verificarDecisao = (select) => {
-	if (select.value == 'Aprovado') {
-		$('#filial').attr('readonly', false).autocomplete('enable');
-		$('#armazem').attr('readonly', false).autocomplete('enable');
-		$('#posIpiNcm').attr('readonly', false).autocomplete('enable');
-		$('#origem').attr('readonly', false).autocomplete('enable');
-	} else {
-		const campos = ['filial', 'armazem', 'posIpiNcm', 'origem'];
+	const campos = ['filial', 'grupo', 'tipo', 'armazem', 'posIpiNcm', 'origem'];
 
-		campos.forEach(campo => {
-			$('#' + campo).val('').attr('readonly', true).autocomplete('disable');
-			setInputCodigo(campo, '');
-		});
-	}
+	campos.forEach(campo => {
+		const elemento = $('#' + campo);
+		let readonly = false;
+		let autocomplete = 'enable';
+
+		if (select.value != 'Aprovado') {
+			elemento.val('');
+			readonly = true;
+			autocomplete = 'disable';
+		}
+
+		elemento.attr('readonly', readonly).autocomplete(autocomplete);
+		setInputCodigo(campo, '');
+	});
 }

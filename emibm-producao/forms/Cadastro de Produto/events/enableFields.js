@@ -5,6 +5,9 @@ function enableFields(form) {
     if (atividade == 0 || atividade == 4) {
         // PAINEL 'APROVAÇÃO'
         form.setEnabled('decisao', false);
+        form.setEnabled('filial', false);
+        form.setEnabled('grupo', false);
+        form.setEnabled('tipo', false);
         form.setEnabled('armazem', false);
         form.setEnabled('posIpiNcm', false);
         form.setEnabled('origem', false);
@@ -17,8 +20,6 @@ function enableFields(form) {
         form.setEnabled('motivo', false);
 
 		// PAINEL 'PRODUTO'
-        form.setEnabled('grupo', false);
-        form.setEnabled('tipo', false);
         form.setEnabled('descricao', false);
         form.setEnabled('unMedida', false);
     }

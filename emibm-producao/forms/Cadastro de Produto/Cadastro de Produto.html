@@ -86,16 +86,6 @@
 					<div id="collapseTwo" class="panel-collapse collapse in">
 						<div class="panel-body">
 							<div class="row">
-								<div class="form-group col-md-2">
-									<label class="control-label" for="grupo">Grupo</label>
-									<input type="text" class="form-control" name="grupo" id="grupo" placeholder="Selecione um grupo">
-									<p class="help-block-grupo help-block"></p>
-								</div>
-								<div class="form-group col-md-3">
-									<label class="control-label" for="tipo">Tipo</label>
-									<input type="text" class="form-control" name="tipo" id="tipo" placeholder="Selecione um tipo">
-									<p class="help-block-tipo help-block"></p>
-								</div>
 								<div class="form-group col-md-5">
 									<label class="control-label" for="descricao">Descrição</label>
 									<input type="text" class="form-control" name="descricao" id="descricao" maxlength="30" placeholder="Informe a descrição" onblur="transformarDescricao(this)">
@@ -144,26 +134,40 @@
 								</div>
 							</div>
 
-							<div class="row" id="camposProtheusAprov">
-								<div class="form-group col-md-3">
-									<label class="control-label" for="filial">Filial</label>
-									<input type="text" class="form-control" name="filial" id="filial" placeholder="Selecione uma filial">
-									<p class="help-block-filial help-block"></p>
+							<div id="camposProtheusAprov">
+								<div class="row">
+									<div class="form-group col-md-4">
+										<label class="control-label" for="filial">Filial</label>
+										<input type="text" class="form-control" name="filial" id="filial" placeholder="Selecione uma filial">
+										<p class="help-block-filial help-block"></p>
+									</div>
+									<div class="form-group col-md-4">
+										<label class="control-label" for="grupo">Grupo</label>
+										<input type="text" class="form-control" name="grupo" id="grupo" placeholder="Selecione um grupo">
+										<p class="help-block-grupo help-block"></p>
+									</div>
+									<div class="form-group col-md-4">
+										<label class="control-label" for="tipo">Tipo</label>
+										<input type="text" class="form-control" name="tipo" id="tipo" placeholder="Selecione um tipo">
+										<p class="help-block-tipo help-block"></p>
+									</div>
 								</div>
-								<div class="form-group col-md-3">
-									<label class="control-label" for="armazem">Armazém Padrão</label>
-									<input type="text" class="form-control" name="armazem" id="armazem" placeholder="Selecione um armazém">
-									<p class="help-block-armazem help-block"></p>
-								</div>
-								<div class="form-group col-md-3">
-									<label class="control-label" for="posIpiNcm">Pos. IPI/NCM</label>
-									<input type="text" class="form-control" name="posIpiNcm" id="posIpiNcm" placeholder="Selecione uma NCM">
-									<p class="help-block-posIpiNcm help-block"></p>
-								</div>
-								<div class="form-group col-md-3">
-									<label class="control-label" for="origem">Origem</label>
-									<input type="text" class="form-control" name="origem" id="origem" placeholder="Selecione uma origem">
-									<p class="help-block-origem help-block"></p>
+								<div class="row">
+									<div class="form-group col-md-4">
+										<label class="control-label" for="armazem">Armazém Padrão</label>
+										<input type="text" class="form-control" name="armazem" id="armazem" placeholder="Selecione um armazém">
+										<p class="help-block-armazem help-block"></p>
+									</div>
+									<div class="form-group col-md-4">
+										<label class="control-label" for="posIpiNcm">Pos. IPI/NCM</label>
+										<input type="text" class="form-control" name="posIpiNcm" id="posIpiNcm" placeholder="Selecione uma NCM">
+										<p class="help-block-posIpiNcm help-block"></p>
+									</div>
+									<div class="form-group col-md-4">
+										<label class="control-label" for="origem">Origem</label>
+										<input type="text" class="form-control" name="origem" id="origem" placeholder="Selecione uma origem">
+										<p class="help-block-origem help-block"></p>
+									</div>
 								</div>
 							</div>
 

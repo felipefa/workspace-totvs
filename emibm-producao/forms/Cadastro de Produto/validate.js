@@ -5,14 +5,10 @@ var beforeSendValidate = function (numState, nextState) {
 		const motivo = document.getElementById('motivo').value;
 
 		// PAINEL 'PRODUTO'
-		const grupo = document.getElementById('codGrupo').value;
-		const tipo = document.getElementById('codTipo').value;
 		const descricao = document.getElementById('descricao').value;
 		const unMedida = document.getElementById('codUnMedida').value;
 
 		if (!isEmpty(motivo) &&
-			!isEmpty(grupo) &&
-			!isEmpty(tipo) &&
 			!isEmpty(descricao) &&
 			!isEmpty(unMedida)) {
 			return true;
@@ -33,12 +29,13 @@ var beforeSendValidate = function (numState, nextState) {
 
 		if (decisao == 'Aprovado') {
 			// PAINEL 'PRODUTO'
-			const grupo = document.getElementById('codGrupo').value;
-			const tipo = document.getElementById('codTipo').value;
 			const descricao = document.getElementById('descricao').value;
 			const unMedida = document.getElementById('codUnMedida').value;
 
 			// PAINEL 'APROVAÇÃO'
+			const filial = document.getElementById('codFilial').value;
+			const grupo = document.getElementById('codGrupo').value;
+			const tipo = document.getElementById('codTipo').value;
 			const armazem = document.getElementById('codArmazemPad').value;
 			const posIpiNcm = document.getElementById('codPosIpiNcm').value;
 			const origem = document.getElementById('codOrigem').value;
@@ -46,10 +43,11 @@ var beforeSendValidate = function (numState, nextState) {
 			// remove label error obs caso aprovado
 			mostrarLabelErro('obsAprov', false, '');
 
-			if (!isEmpty(grupo) &&
-				!isEmpty(tipo) &&
-				!isEmpty(descricao) &&
+			if (!isEmpty(descricao) &&
 				!isEmpty(unMedida) &&
+				!isEmpty(filial) &&
+				!isEmpty(grupo) &&
+				!isEmpty(tipo) &&
 				!isEmpty(armazem) &&
 				!isEmpty(posIpiNcm) &&
 				!isEmpty(origem)) {
