@@ -5,9 +5,19 @@ var beforeSendValidate = function (numState, nextState) {
 	if (numState == 0 || numState == 4) {
 		let vazio = false;
 
-		$('input, select, textarea').not('readonly, :hidden').each(function () {
+		if ($('[id^=item___]').length == 0) {
+			FLUIGC.toast({
+				title: 'Atenção!',
+				message: 'Informe pelo menos um item.',
+				type: 'warning'
+			});
+
+			return false;
+		}
+
+		$('input, select, textarea').not(':hidden').each(function () {
 			const elemento = $(this);
-			if (isEmpty(elemento.val()) && !elemento.prop('readonly')) {
+			if (isEmpty(elemento.val()) && !elemento.prop('readonly') && elemento.prop('id').indexOf('obsItem') == -1) {
 				elemento.blur();
 				vazio = true;
 			}
@@ -16,7 +26,7 @@ var beforeSendValidate = function (numState, nextState) {
 		if (vazio) {
 			FLUIGC.toast({
 				title: 'Atenção!',
-				message: 'Preencha todos os campos.',
+				message: 'Preencha todos os campos em vermelho.',
 				type: 'warning'
 			});
 
@@ -59,7 +69,7 @@ var beforeSendValidate = function (numState, nextState) {
 						'ITEM': index + 1 + '',
 						'PRODUTO': $(`#codItem___${posicaoPaiFilho}`).val(),
 						'QUANT': $(`#quantidade___${posicaoPaiFilho}`).val(),
-						'OBS': `ID fluig: ${solicitacaoFluig} - Local: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${obs}`.toUpperCase()
+						'OBS': `ID fluig: ${solicitacaoFluig} - Local: ${localNecessidade} - Motivo: ${motivo} - Obs.: ${isEmpty(obs) ? '-' : obs}`.toUpperCase()
 					});
 				});
 

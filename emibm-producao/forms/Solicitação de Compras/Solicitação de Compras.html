@@ -32,6 +32,7 @@
 				</div>
 			</div>
 		</div>
+		<div class="alert alert-warning" role="alert" id="alerta" hidden><strong>Atenção!</strong> Seu email não está associado a um centro de custo no Protheus, portanto não será possível iniciar uma solicitação. Contate o administrador para mais informações.</div>
 		<form name="form" role="form">
 			<!-- CAMPOS OCULTOS -->
 			<input type="hidden" name="matSolicitante" id="matSolicitante">
@@ -140,7 +141,7 @@
 													<p class="help-block" name="hb_quantidade" id="hb_quantidade"></p>
 												</div>
 												<div class="form-group col-xs-12 col-md-4">
-													<label>Observação</label>
+													<label class="control-label" for="obsItem">Observação</label>
 													<textarea rows="1" class="form-control" name="obsItem" id="obsItem" maxlength="50" style="resize: vertical;" placeholder="Informe uma observação para o item"></textarea>
 												</div>
 												<div class="form-group col-xs-12 col-md-1 bpm-mobile-trash-column">

@@ -1,3 +1,6 @@
+var CENTROSCUSTO = [];
+var FILIAIS = [];
+
 $(() => {
 	const today = new Date();
 	const year = today.getFullYear();
@@ -27,6 +30,29 @@ $(() => {
 				$('#camposProtheusAprov').hide();
 			}
 		} else {
+			const constraintUsuario = [DatasetFactory.createConstraint('email', top.WCMAPI.userEmail, null, ConstraintType.MUST)];
+			const dsWsConsultaUsuario = DatasetFactory.getDataset('dsWsConsultaUsuario', null, constraintUsuario, null);
+
+			if (dsWsConsultaUsuario != null && dsWsConsultaUsuario.values.length > 0 && dsWsConsultaUsuario.values[0].sucesso) {
+				CENTROSCUSTO = JSON.parse(dsWsConsultaUsuario.values[0].centroCusto);
+				FILIAIS = JSON.parse(dsWsConsultaUsuario.values[0].filial);
+			}
+
+			if (FILIAIS.length > 0 && CENTROSCUSTO.length > 0) {
+				// Remove possíveis códigos repetidos
+				FILIAIS = FILIAIS.filter((cod, index) => {
+					return FILIAIS.indexOf(cod) === index;
+				});
+				CENTROSCUSTO = CENTROSCUSTO.filter((cod, index) => {
+					return CENTROSCUSTO.indexOf(cod) === index;
+				});
+			} else {
+				// Usuário não possui centros de custo no Protheus
+				$('#alerta').show();
+				$('#filial').attr('disabled', true);
+				$('#centroCusto').attr('disabled', true);
+			}
+
 			instanciarAutocomplete('filial');
 			instanciarAutocomplete('centroCusto');
 
@@ -181,12 +207,36 @@ const buscarDados = (id, filtro) => {
 
 	if (dsWsProtheus != null && dsWsProtheus.values.length > 0 && !dsWsProtheus.values[0].erro) {
 		dsWsProtheus.values.forEach(dado => {
-			dados.push({
-				value: dado.codigo + ' - ' + dado.descricao,
-				codigo: dado.codigo,
-				descricao: dado.descricao,
-				dados: dado
-			});
+			if (id == 'centroCusto') {
+				CENTROSCUSTO.forEach(centroCusto => {
+					if (centroCusto == dado.codigo) {
+						dados.push({
+							value: dado.codigo + ' - ' + dado.descricao,
+							codigo: dado.codigo,
+							descricao: dado.descricao,
+							dados: dado
+						});
+					}
+				});
+			} else if (id == 'filial') {
+				FILIAIS.forEach(filial => {
+					if (filial == dado.codigo) {
+						dados.push({
+							value: dado.codigo + ' - ' + dado.descricao,
+							codigo: dado.codigo,
+							descricao: dado.descricao,
+							dados: dado
+						});
+					}
+				});
+			} else {
+				dados.push({
+					value: dado.codigo + ' - ' + dado.descricao,
+					codigo: dado.codigo,
+					descricao: dado.descricao,
+					dados: dado
+				});
+			}
 		});
 
 		if (id = 'filial')
@@ -240,6 +290,7 @@ const instanciarAutocomplete = (id) => {
 				} else if (id == 'filial') {
 					$('#centroCusto').val('');
 				}
+
 				return false;
 			},
 			close: (evento) => {
@@ -360,7 +411,25 @@ const verificarItem = (elemento) => {
 		$('#unMedida___' + posicao).val('');
 		mostrarLabelErro(elemento.id, true, 'Um produto deve ser selecionado.', 'id');
 	} else {
-		mostrarLabelErro(elemento.id, false, '', 'id');
+		const codigo = $('#codItem___' + posicao);
+		const elemCodigos = document.querySelectorAll('[id^="codItem___"]');
+		let encontrou = false;
+
+		elemCodigos.forEach(elemCodigo => {
+			const posicaoCodigo = elemCodigo.id.split('___')[1];
+
+			if (elemCodigo.value === codigo.val() && posicao !== posicaoCodigo)
+				encontrou = true;
+		});
+
+		if (encontrou) {
+			const item = document.getElementById('item___' + posicao);
+			mostrarLabelErro(elemento.id, true, item.value + ' já está na lista.', 'id');
+			codigo.val('');
+			item.value = '';
+			document.getElementById('unMedida___' + posicao).value = '';
+		} else
+			mostrarLabelErro(elemento.id, false, '', 'id');
 	}
 }
 
