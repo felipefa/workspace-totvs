@@ -8,6 +8,94 @@ User Function wsReqMaT()
 Return
 
 /* ----------------------------------------------------------------------------- */
+/* ----------------------- User X Centro de Custo ------------------------------ */
+/* ----------------------------------------------------------------------------- */
+//Inicio da Declaracao do Web Service User X Centro de Custo
+WSRESTFUL USERXCC DESCRIPTION "Servico REST para User X Centro de Custos"
+	WSDATA ID As String
+
+	WSMETHOD GET DESCRIPTION "Retorna os centos de custos pertencentes ao usuário" WSSYNTAX "/USERXCC&{ID}"
+END WSRESTFUL
+
+//Inicio do Mitodo GET do Web Service de USERXCC
+WSMETHOD GET WSRECEIVE ID WSSERVICE USERXCC
+	Local aArea := GetArea()
+	Local cNextAlias := GetNextAlias()
+	Local oUxcc := UXCC():New() //Objeto da classe uxcc
+	Local oResponse := UXCC_FULL():New() //Objeto que sera serializado
+	Local cJSON	:= ""
+	Local lRet := .T.
+	Local cId := Self:ID
+
+	::SetContentType("application/json")
+
+	BeginSQL Alias cNextAlias
+		SELECT DBK_CC, DBK_FILIAL
+		FROM  %table:DBK% DBK
+		WHERE DBK.%notdel%
+			AND DBK_USER = %exp:cId%
+	EndSQL
+
+	(cNextAlias)->(DbGoTop())
+
+	If (cNextAlias)->(!Eof())
+		While (cNextAlias)->(!Eof())
+			oUxcc:SetCodigo(AllTrim((cNextAlias)->DBK_CC))
+			oUxcc:SetFilial(AllTrim((cNextAlias)->DBK_FILIAL))
+			oResponse:Add(oUxcc)
+			oUxcc := UXCC():New()
+			(cNextAlias)->(DbSkip())
+		EndDo
+
+		cJSON := FWJsonSerialize(oResponse, .T., .T.,, .F.)
+		::SetResponse(cJSON)
+	Else
+		SetRestFault(400, "Nao existem centros de custo para o usuario informado.")
+		lRet := .F.
+	EndIf
+	RestArea(aArea)
+	(cNextAlias)->(DbcloseArea())
+Return(lRet)
+
+//Declaracao de Classes Utilizadas no Web Service UXCC
+Class UXCC
+	Data codigo	As String
+	Data filial As String
+
+	Method New() Constructor
+	Method SetCodigo(cCodigo)
+	Method SetFilial(cFilial)
+EndClass
+
+Class UXCC_FULL
+	Data Ccusto
+
+	Method New() Constructor
+	Method Add()
+EndClass
+
+//Inicio dos Metodos Utilizados Pelas Classes
+Method New() Class UXCC
+	::codigo := ""
+	::filial := ""
+Return(Self)
+
+Method SetCodigo(cCodigo) Class UXCC
+Return(::codigo := cCodigo)
+
+Method SetFilial(cFilial) Class UXCC
+Return(::filial := cFilial)
+
+Method New() Class UXCC_FULL
+	::Ccusto := {}
+Return(Self)
+
+Method Add(oUxcc) Class UXCC_FULL
+	Aadd(::Ccusto, oUxcc)
+Return
+//Fim dos Metodos Utilizados Pelas Classes
+
+/* ----------------------------------------------------------------------------- */
 /* ------------------------------- Produtos ------------------------------------ */
 /* ----------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service PRODUTO
@@ -1143,8 +1231,8 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 		ConfirmSX8()
 		cJSONRet := '{"cod": "200"';
 				   + ', "sucesso":"TRUE"';
-				   + ', "msg":"Solicitação cadastrada com sucesso!"';
-				   + ', "solicitacao":"' + EncodeUTF8(SC1->C1_NUM, "cp1252") + '"';
+				   + ', "msg":"' + EncodeUTF8("Solicitação cadastrada com sucesso!", "cp1252") + '"';
+				   + ', "solicitacao":"' + SC1->C1_NUM + '"';
 				   + '}'
 
 		::SetResponse(cJSONRet)
