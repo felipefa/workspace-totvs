@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Solicitação de Compras</processId>
-      <version>3</version>
+      <version>4</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>35</formId>
@@ -201,7 +201,7 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
-      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <notifyRequisitionerFollowUp>true</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>670</positionX>
       <positionY>30</positionY>
@@ -248,7 +248,7 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
-      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <notifyRequisitionerFollowUp>true</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>670</positionX>
       <positionY>100</positionY>
@@ -275,7 +275,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>1</expressionOrder>
-        <version>3</version>
+        <version>4</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Aprovado&quot;</condition>
@@ -287,7 +287,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>2</expressionOrder>
-        <version>3</version>
+        <version>4</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
@@ -299,7 +299,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>3</expressionOrder>
-        <version>3</version>
+        <version>4</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Ajustar&quot;</condition>
@@ -456,7 +456,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
-        <version>3</version>
+        <version>4</version>
         <linkSequence>6</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -467,7 +467,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
-        <version>3</version>
+        <version>4</version>
         <linkSequence>10</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
