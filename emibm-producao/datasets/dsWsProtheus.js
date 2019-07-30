@@ -269,6 +269,7 @@ function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro, 
 	if (endpoint.indexOf('branches') == -1 && tipoRequisicao == 'GET') {
 		endpoint += '?FILTRO=' + filtro.replace(new RegExp(' ', 'g'), '%20') + '&TIPO=' + tipoFiltro;
 		if (filial != '') endpoint += '&FILIAL=' + filial;
+		else if (endpoint.indexOf('produto') != -1) endpoint += '&LIMITE=TRUE';
 	}
 
 	log.warn('----- Debug dsWsProtheus ----- endpoint: ' + endpoint);
@@ -276,7 +277,7 @@ function consultarProtheus(endpoint, tipoRequisicao, dados, filtro, tipoFiltro, 
 	try {
 		var clientService = fluigAPI.getAuthorizeClientService();
 		var data = {
-			companyId: getValue('WKCompany') + '',
+			companyId: '1',//getValue('WKCompany') + '',
 			serviceCode: 'rest_protheus',
 			endpoint: endpoint,
 			method: tipoRequisicao,

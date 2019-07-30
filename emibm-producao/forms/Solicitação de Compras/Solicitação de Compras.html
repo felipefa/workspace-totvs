@@ -12,13 +12,6 @@
 	<script type="text/javascript" src="validate.js" charset="utf-8"></script>
 </head>
 
-<style>
-	/* Trata o espaçamento do ícone da lixeira na tabela pai e filho */
-	.bpm-mobile-trash-column {
-		width: 76px;
-	}
-</style>
-
 <body>
 	<div class="fluig-style-guide">
 		<div class="page-header">
@@ -144,9 +137,9 @@
 													<label class="control-label" for="obsItem">Observação</label>
 													<textarea rows="1" class="form-control" name="obsItem" id="obsItem" maxlength="50" style="resize: vertical;" placeholder="Informe uma observação para o item"></textarea>
 												</div>
-												<div class="form-group col-xs-12 col-md-1 bpm-mobile-trash-column">
+												<div class="form-group col-xs-12 col-md-1 lixeira">
 													<label><br></label><br>
-													<button class="btn btn-danger" onclick="removerItem(this)">Excluir</button>
+													<button class="btn btn-block btn-danger" onclick="removerItem(this)">Excluir</button>
 												</div>
 												<div class="col-xs-12">
 													<hr id="hrItens">

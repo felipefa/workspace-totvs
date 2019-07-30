@@ -3,10 +3,12 @@ function displayFields(form, customHTML) {
 	var numeroSolicitacao = getValue('WKNumProces');
 	var formMobile = form.getMobile();
 	var formMode = form.getFormMode();
+	var email = fluigAPI.getUserService().getCurrent().getEmail();
 
 	customHTML.append('<script>var ATIVIDADE = ' + atividade + ';</script>');
 	customHTML.append('<script>var FORM_MODE = "' + formMode + '";</script>');
 	customHTML.append('<script>var MOBILE = ' + formMobile + ';</script>');
+	customHTML.append('<script>var EMAIL = "' + email + '";</script>');
 
 	// Atribui o nome do usuário logado aos campos necessários
 	var usuarioWKUser = getValue('WKUser');
@@ -32,7 +34,7 @@ function displayFields(form, customHTML) {
 
 		if (formMode == 'VIEW') {
 			customHTML.append('<script>');
-			customHTML.append('  $(".bpm-mobile-trash-column").hide();');
+			customHTML.append('  $(".lixeira").hide();');
 			customHTML.append('  $("#btnAdicionarItem").hide();');
 			customHTML.append('  $("#btnIncluirProduto").hide();');
 			customHTML.append('</script>');
@@ -51,7 +53,7 @@ function displayFields(form, customHTML) {
 	// ATIVIDADE NÃO É 'INÍCIO'
 	if (atividade != 0 && atividade != 4) {
 		customHTML.append('<script>');
-		customHTML.append('  $(".bpm-mobile-trash-column").hide();');
+		customHTML.append('  $(".lixeira").hide();');
 		customHTML.append('  $("#btnAdicionarItem").hide();');
 		customHTML.append('  $("#btnIncluirProduto").hide();');
 		customHTML.append('</script>');

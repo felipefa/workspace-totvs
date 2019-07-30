@@ -17,6 +17,7 @@ WSRESTFUL USERXCC DESCRIPTION "Servico REST para User X Centro de Custos"
 	WSMETHOD GET DESCRIPTION "Retorna os centos de custos pertencentes ao usuário" WSSYNTAX "/USERXCC&{ID}"
 END WSRESTFUL
 
+
 //Inicio do Mitodo GET do Web Service de USERXCC
 WSMETHOD GET WSRECEIVE ID WSSERVICE USERXCC
 	Local aArea := GetArea()
@@ -41,7 +42,7 @@ WSMETHOD GET WSRECEIVE ID WSSERVICE USERXCC
 	If (cNextAlias)->(!Eof())
 		While (cNextAlias)->(!Eof())
 			oUxcc:SetCodigo(AllTrim((cNextAlias)->DBK_CC))
-			oUxcc:SetFilial(AllTrim((cNextAlias)->DBK_FILIAL))
+			oUxcc:SetFil(AllTrim((cNextAlias)->DBK_FILIAL))
 			oResponse:Add(oUxcc)
 			oUxcc := UXCC():New()
 			(cNextAlias)->(DbSkip())
@@ -64,7 +65,7 @@ Class UXCC
 
 	Method New() Constructor
 	Method SetCodigo(cCodigo)
-	Method SetFilial(cFilial)
+	Method SetFil(cFil)
 EndClass
 
 Class UXCC_FULL
@@ -83,8 +84,8 @@ Return(Self)
 Method SetCodigo(cCodigo) Class UXCC
 Return(::codigo := cCodigo)
 
-Method SetFilial(cFilial) Class UXCC
-Return(::filial := cFilial)
+Method SetFil(cFil) Class UXCC
+Return(::filial := cFil)
 
 Method New() Class UXCC_FULL
 	::Ccusto := {}
@@ -102,13 +103,14 @@ Return
 WSRESTFUL PRODUTO DESCRIPTION "Servico REST para cadastro de Produtos"
 	WSDATA FILTRO As String
 	WSDATA TIPO As String
+	WSDATA LIMITE As String
 
 	WSMETHOD GET DESCRIPTION "Retorna os produtos cadastrados" WSSYNTAX "/PRODUTO || /PRODUTO&{FILTRO}&{TIPO}"
 	WSMETHOD POST DESCRIPTION "Cadastrar produto" WSSYNTAX "/PRODUTO"
 END WSRESTFUL
 
 //Inicio do Mitodo GET do Web Service de PRODUTO
-WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
+WSMETHOD GET WSRECEIVE FILTRO, TIPO, LIMITE WSSERVICE PRODUTO
 	Local aArea := GetArea()
 	Local cNextAlias := GetNextAlias()
 	Local oProduto := PROD():New() //Objeto da classe produto
@@ -117,14 +119,22 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 	Local lRet := .T.
 	Local cFiltro := Self:FILTRO
 	Local cTipo := Self:TIPO
+	Local cLimite := Self:LIMITE
 	Local cLike := ""
+	Local cTop := "%%"
 
 	::SetContentType("application/json")
 
+	If !(EMPTY(cLimite))
+		If (Upper(cLimite) == 'TRUE')
+			cTop := "%TOP 5%"
+		EndIf
+	EndIf
+
 	//Caso nao seja informado codigo do produto no parametro, ira retornar todos os produtos
-	IF (EMPTY(cFiltro) .Or. EMPTY(cTipo))
+	If (EMPTY(cFiltro) .Or. EMPTY(cTipo))
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 B1_COD, B1_DESC, B1_UM, B1_TIPO
+			SELECT %exp:cTop% B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
 			WHERE SB1.%notdel%
 				AND B1_MSBLQL <> '1'
@@ -140,7 +150,7 @@ WSMETHOD GET WSRECEIVE FILTRO, TIPO WSSERVICE PRODUTO
 		EndIf
 
 		BeginSQL Alias cNextAlias
-			SELECT TOP 5 B1_COD, B1_DESC, B1_UM, B1_TIPO
+			SELECT %exp:cTop% B1_COD, B1_DESC, B1_UM, B1_TIPO
 			FROM %table:SB1% SB1
 			WHERE SB1.%notdel%
 				AND %exp:cLike%

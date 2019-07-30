@@ -17,96 +17,81 @@ function createDataset(fields, constraints, sortFields) {
 	try {
 		log.warn('------------------------ dsWsConsultaUsuario ------------------------');
 
-		var constraintBuscarCC = true;
 		var constraintEmail = '';
 		var dsWsConsultaUsuario = DatasetBuilder.newDataset();
-		var mensagem = 'Nenhuma constraint informada';
+		var mensagem = 'Erro desconhecido no dsWsConsultaUsuario';
 		var sucesso = false;
 
+		dsWsConsultaUsuario.addColumn('idProtheus');
+		dsWsConsultaUsuario.addColumn('nome');
+		dsWsConsultaUsuario.addColumn('email');
 		dsWsConsultaUsuario.addColumn('sucesso');
 		dsWsConsultaUsuario.addColumn('mensagem');
+		dsWsConsultaUsuario.addColumn('centroCusto');
+		dsWsConsultaUsuario.addColumn('filial');
 
 		if (constraints != null) {
 			for (var indexConstraints = 0; indexConstraints < constraints.length; indexConstraints++) {
-				if (constraints[indexConstraints].fieldName == 'buscarCC')
-					constraintBuscarCC = constraints[indexConstraints].initialValue;
 				if (constraints[indexConstraints].fieldName == 'email')
 					constraintEmail = constraints[indexConstraints].initialValue;
 			}
 
 			log.warn('------------------------ Constraints dsWsConsultaUsuario ------------------------');
-			log.warn('---Debug dsWsProtheus--- constraintBuscarCC: ' + constraintBuscarCC);
-			log.warn('---Debug dsWsProtheus--- constraintEmail: ' + constraintEmail);
+			log.warn('----- Debug dsWsConsultaUsuario ----- constraintEmail: ' + constraintEmail);
 			log.warn('------------------------ ------------------------------- ------------------------');
+		}
 
-			if (constraintEmail != '') {
-				var retornoProtheus = JSON.parse(consultarProtheus('users', ''));
+		var retornoProtheus = JSON.parse(consultarProtheus('users', ''));
 
-				if (retornoProtheus != null) {
-					var usuarios = retornoProtheus.resources;
-					var usuarioEncontrado = false;
+		if (retornoProtheus != null) {
+			var usuarios = retornoProtheus.resources;
+			var usuarioEncontrado = false;
 
-					for (var indexUsuarios = 0; indexUsuarios < usuarios.length; indexUsuarios++) {
-						var emails = usuarios[indexUsuarios].emails;
+			for (var indexUsuarios = 0; indexUsuarios < usuarios.length; indexUsuarios++) {
+				var emails = usuarios[indexUsuarios].emails;
+				var id = usuarios[indexUsuarios].id;
+				var nome = usuarios[indexUsuarios].displayName;
 
-						for (var indexEmails = 0; indexEmails < emails.length; indexEmails++) {
-							var email = emails[indexEmails].value;
+				for (var indexEmails = 0; indexEmails < emails.length; indexEmails++) {
+					var email = emails[indexEmails].value;
 
-							if (email == constraintEmail + '' && !usuarioEncontrado) {
-								var id = usuarios[indexUsuarios].id;
+					if ((constraintEmail == '' || (constraintEmail != '' && email == constraintEmail + '')) && !usuarioEncontrado) {
+						usuarioEncontrado = true;
 
-								usuarioEncontrado = true;
+						retornoProtheus = JSON.parse(consultarProtheus('userxcc', id));
 
-								dsWsConsultaUsuario.addColumn('id');
-								dsWsConsultaUsuario.addColumn('email');
+						if (retornoProtheus != null) {
+							var centrosCusto = retornoProtheus.CCUSTO;
+							var codigosCC = [];
+							var codigosFiliais = [];
 
-								if (constraintBuscarCC) {
-									// Se encontrar o usuário com o email informado, busca seus centros de custo se a constraintBuscarCC for true
-									retornoProtheus = JSON.parse(consultarProtheus('userxcc', id));
-
-									if (retornoProtheus != null) {
-										var centrosCusto = retornoProtheus.CCUSTO;
-										var codigosCC = [];
-										var codigosFiliais = [];
-
-										if (centrosCusto) {
-											for (var indexCC = 0; indexCC < centrosCusto.length; indexCC++) {
-												codigosCC.push(centrosCusto[indexCC].CODIGO);
-												codigosFiliais.push(centrosCusto[indexCC].FILIAL);
-											}
-										}
-
-										sucesso = true;
-										mensagem = 'Centros de custo consultados com sucesso';
-										dsWsConsultaUsuario.addColumn('centroCusto');
-										dsWsConsultaUsuario.addColumn('filial');
-
-										dsWsConsultaUsuario.addRow([sucesso, mensagem, id, email, JSON.stringify(codigosCC), JSON.stringify(codigosFiliais)]);
-									}
-								} else {
-									// Retorna apenas o id do usuário no Protheus se a constraintBuscarCC for false
-									sucesso = true;
-									mensagem = 'Usuário encontrado';
-									dsWsConsultaUsuario.addRow([sucesso, mensagem, id, email]);
+							if (centrosCusto) {
+								for (var indexCC = 0; indexCC < centrosCusto.length; indexCC++) {
+									codigosCC.push(centrosCusto[indexCC].CODIGO);
+									codigosFiliais.push(centrosCusto[indexCC].FILIAL);
 								}
 							}
-						}
-					}
 
-					if (!usuarioEncontrado) {
-						mensagem = 'Nenhum usuário com o email ' + constraintEmail + ' foi encontrado';
-						dsWsConsultaUsuario.addRow([sucesso, mensagem]);
-					}
-				} else {
-					mensagem = 'Nenhum dado encontrado na consulta ao Protheus';
-					dsWsConsultaUsuario.addRow([sucesso, mensagem]);
+							sucesso = true;
+							mensagem = 'Usuário encontrado';
+
+							dsWsConsultaUsuario.addRow([id, nome, email, sucesso, mensagem, JSON.stringify(codigosCC), JSON.stringify(codigosFiliais)]);
+						} else {
+							mensagem = 'Nenhum dado encontrado na consulta de centros de custos do usuário ' + id + ' - ' + nome + ' no Protheus';
+							dsWsConsultaUsuario.addRow(['', '', '', sucesso, mensagem, '', '']);
+						}
+					} else
+						usuarioEncontrado = false;
 				}
-			} else {
-				mensagem = 'Nenhum email informado';
-				dsWsConsultaUsuario.addRow([sucesso, mensagem]);
+			}
+
+			if (!usuarioEncontrado && constraintEmail != '') {
+				mensagem = 'Nenhum usuário com o email ' + constraintEmail + ' foi encontrado';
+				dsWsConsultaUsuario.addRow(['', '', '', sucesso, mensagem, '', '']);
 			}
 		} else {
-			dsWsConsultaUsuario.addRow([sucesso, mensagem]);
+			mensagem = 'Nenhum dado encontrado na consulta de usuários do Protheus';
+			dsWsConsultaUsuario.addRow(['', '', '', sucesso, mensagem, '', '']);
 		}
 
 		return dsWsConsultaUsuario;
@@ -126,7 +111,7 @@ function createDataset(fields, constraints, sortFields) {
  * @param {String} endpoint Nome do endpoint rest do Protheus que será utilizado.
  * @param {String} id Código do usuário no Protheus, usado apenas com o endpoint 'userxcc'.
  */
-function consultarProtheus(endpoint, id, filial) {
+function consultarProtheus(endpoint, id) {
 	if (endpoint == '' || endpoint == null) return null;
 	else if (endpoint == 'userxcc') {
 		if (id != '') {
@@ -141,7 +126,7 @@ function consultarProtheus(endpoint, id, filial) {
 	try {
 		var clientService = fluigAPI.getAuthorizeClientService();
 		var data = {
-			companyId: getValue('WKCompany') + '',
+			companyId: '1', // Erro ao usar getValue('WKCompany') + '' no onSync,
 			serviceCode: 'rest_protheus',
 			endpoint: endpoint,
 			method: 'GET',
@@ -156,10 +141,8 @@ function consultarProtheus(endpoint, id, filial) {
 
 		if (vo.getResult() == null || vo.getResult().isEmpty())
 			throw new Exception('O retorno está vazio');
-		else {
-			// log.warn('----- Debug dsWsConsultaUsuario ----- consultarProtheus: ' + vo.getResult());
+		else
 			return vo.getResult();
-		}
 	} catch (e) {
 		log.warn('----- Debug dsWsConsultaUsuario ----- Erro ao consultar Protheus: ' + e);
 	}

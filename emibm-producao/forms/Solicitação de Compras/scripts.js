@@ -1,18 +1,13 @@
 var CENTROSCUSTO = [];
+var DSWSUSUARIOSPROTHEUS = null;
+var DSWSPRODUTOOFFLINE = null;
+var DSWSFILIAISCENTROCUSTOOFFLINE = null;
 var FILIAIS = [];
 
 $(() => {
-	const today = new Date();
-	const year = today.getFullYear();
-	const month = (today.getMonth() + 1) < 10 ? '0' + (today.getMonth() + 1) : (today.getMonth() + 1);
-	const day = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
-	const currentDate = `${year}-${month}-${day}`;
-
-	esconderUltimaHr('hrItens');
-
 	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0)
-		document.getElementById('dtSolicitacao').value = currentDate;
+		document.getElementById('dtSolicitacao').value = getDataAtual();
 
 	// ATIVIDADE 'INÍCIO'
 	if (ATIVIDADE == 0 || ATIVIDADE == 4) {
@@ -30,12 +25,27 @@ $(() => {
 				$('#camposProtheusAprov').hide();
 			}
 		} else {
-			const constraintUsuario = [DatasetFactory.createConstraint('email', top.WCMAPI.userEmail, null, ConstraintType.MUST)];
-			const dsWsConsultaUsuario = DatasetFactory.getDataset('dsWsConsultaUsuario', null, constraintUsuario, null);
+			// Busca os usuários do Protheus, junto com as filiais e centros de custo aos quais está associado
+			DSWSUSUARIOSPROTHEUS = DatasetFactory.getDataset('dsWsUsuariosProtheus', null, null, null);
 
-			if (dsWsConsultaUsuario != null && dsWsConsultaUsuario.values.length > 0 && dsWsConsultaUsuario.values[0].sucesso) {
-				CENTROSCUSTO = JSON.parse(dsWsConsultaUsuario.values[0].centroCusto);
-				FILIAIS = JSON.parse(dsWsConsultaUsuario.values[0].filial);
+			if (MOBILE != null && MOBILE) {
+				document.getElementById('btnIncluirProduto').style.display = 'none';
+				document.getElementById('helpIncluirProduto').style.display = 'block';
+
+				// Busca os produtos do Protheus se estiver offline no app do fluig
+				DSWSFILIAISCENTROCUSTOOFFLINE = DatasetFactory.getDataset('dsWsFiliaisCentroCustoOffline', null, null, null);
+				DSWSPRODUTOOFFLINE = DatasetFactory.getDataset('dsWsProdutoOffline', null, null, null);
+			}
+
+			if (DSWSUSUARIOSPROTHEUS != null) {
+				if (DSWSUSUARIOSPROTHEUS.values != null && DSWSUSUARIOSPROTHEUS.values.length > 0) {
+					DSWSUSUARIOSPROTHEUS.values.forEach(usuario => {
+						if (usuario.email === EMAIL) {
+							CENTROSCUSTO = JSON.parse(usuario.centroCusto);
+							FILIAIS = JSON.parse(usuario.filial);
+						}
+					});
+				}
 			}
 
 			if (FILIAIS.length > 0 && CENTROSCUSTO.length > 0) {
@@ -46,6 +56,9 @@ $(() => {
 				CENTROSCUSTO = CENTROSCUSTO.filter((cod, index) => {
 					return CENTROSCUSTO.indexOf(cod) === index;
 				});
+
+				instanciarAutocomplete('filial');
+				instanciarAutocomplete('centroCusto');
 			} else {
 				// Usuário não possui centros de custo no Protheus
 				$('#alerta').show();
@@ -53,19 +66,18 @@ $(() => {
 				$('#centroCusto').attr('disabled', true);
 			}
 
-			instanciarAutocomplete('filial');
-			instanciarAutocomplete('centroCusto');
-
-			$('[id^=item___]').each(function () {
-				const posicao = $(this).prop('id').split('___')[1];
-				instanciarAutocomplete('item___' + posicao);
-			});
-
 			setTimeout(() => {
 				// Atribui a data da solicitação como data mínima para a data da necessidade
 				document.getElementById('dtNecessidade').min = document.getElementById('dtSolicitacao').value;
 			}, 500);
 
+			// Instancia o autocomplete em cada input de produto (item) já existente
+			$('[id^=item___]').each(function () {
+				const posicao = $(this).prop('id').split('___')[1];
+				instanciarAutocomplete('item___' + posicao);
+			});
+
+			// Faz o blur dos campos obrigatórios
 			$('#dtNecessidade').blur(function () {
 				if ($(this).val() == '')
 					mostrarLabelErro('dtNecessidade', true, 'Informe uma data.');
@@ -106,11 +118,6 @@ $(() => {
 					mostrarLabelErro('motivo', false, '');
 			});
 		}
-
-		if (MOBILE != null && MOBILE) {
-			document.getElementById('btnIncluirProduto').style.display = 'none';
-			document.getElementById('helpIncluirProduto').style.display = 'block';
-		}
 	}
 
 	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
@@ -119,11 +126,11 @@ $(() => {
 			const dtNecessidade = document.getElementById('dtNecessidade').innerHTML;
 			const dtSolicitacao = document.getElementById('dtSolicitacao').innerHTML;
 
-			document.getElementById('dtAprov').innerHTML = `${day}/${month}/${year}`;
+			document.getElementById('dtAprov').innerHTML = getDataAtual('dd/mm/yyyy');
 			document.getElementById('dtNecessidade').innerHTML = transformarDataEmBr(dtNecessidade);
 			document.getElementById('dtSolicitacao').innerHTML = transformarDataEmBr(dtSolicitacao);
 		} else {
-			document.getElementById('dtAprov').value = currentDate;
+			document.getElementById('dtAprov').value = getDataAtual();
 
 			$('#decisao').blur(function () {
 				if (isEmpty($(this).val()))
@@ -157,6 +164,7 @@ $(() => {
 		}
 	}
 
+	// Botão para incluir um item na tabela pai x filho
 	document.getElementById('btnAdicionarItem').onclick = () => {
 		const posicao = wdkAddChild('itens');
 
@@ -164,6 +172,7 @@ $(() => {
 		instanciarAutocomplete(`item___${posicao}`);
 	};
 
+	// Botão para abrir uma solicitação de cadastro de produto
 	document.getElementById('btnIncluirProduto').onclick = () => {
 		FLUIGC.message.confirm({
 			message: 'Deseja abrir uma nova solicitação para inclusão de um produto?',
@@ -175,6 +184,8 @@ $(() => {
 				parent.open(top.WCMAPI.tenantURL + '/pageworkflowview?processID=CadastroDeProduto');
 		});
 	};
+
+	esconderUltimaHr('hrItens');
 });
 
 /**
@@ -188,6 +199,7 @@ const buscarDados = (id, filtro) => {
 	let endpoint = '';
 	let filial = '';
 
+	// Atribui o endpoint específico de acordo com o id do input em que o autocomplete será instanciado
 	if (id == 'centroCusto') {
 		endpoint = 'ccusto';
 		filial = document.getElementById('codFilial').value;
@@ -253,6 +265,73 @@ const buscarDados = (id, filtro) => {
 }
 
 /**
+ * Busca os dados do Protheus de acordo com o campo e o valor informados.
+ *
+ * @param {String} id Id do input que receberá o autocomplete.
+ * @param {String} filtro Valor que deve ser buscado no Protheus.
+ */
+const buscarDadosOffline = (id, filtro) => {
+	const dados = [];
+
+	if (id == 'filial') {
+		if (FILIAIS.length > 0) {
+			const objetosFiliais = DSWSFILIAISCENTROCUSTOOFFLINE.values.filter(function (a) {
+				var key = a.descricaoFilial + '|' + a.codigoFilial;
+				if (!this[key]) {
+					this[key] = true;
+					return true;
+				}
+			}, Object.create(null));
+
+			FILIAIS.forEach(filial => {
+				objetosFiliais.forEach(objeto => {
+					if (filial == objeto.codigoFilial) {
+						dados.push({
+							value: filial + ' - ' + objeto.descricaoFilial,
+							codigo: filial,
+							descricao: objeto.descricaoFilial,
+						});
+					}
+				});
+			});
+		}
+	} else if (id == 'centroCusto') {
+		if (CENTROSCUSTO.length > 0) {
+			const filial = document.getElementById('codFilial').value;
+			DSWSFILIAISCENTROCUSTOOFFLINE.values.forEach(objeto => {
+				CENTROSCUSTO.forEach(centroCusto => {
+					if (filial == objeto.codigoFilial && centroCusto == objeto.codigoCC) {
+						dados.push({
+							value: centroCusto + ' - ' + objeto.descricaoCC,
+							codigo: centroCusto,
+							descricao: objeto.descricaoCC
+						});
+					}
+				});
+			});
+		}
+	} else if (id.indexOf('item') == 0) {
+		if (DSWSPRODUTOOFFLINE != null && DSWSPRODUTOOFFLINE.values.length > 0) {
+			DSWSPRODUTOOFFLINE.values.forEach(dado => {
+				if (filtro === '' ||
+					(filtro != '' &&
+						(dado.codigo.indexOf(filtro) != -1 || dado.descricao.indexOf(filtro) == 0))) {
+					dados.push({
+						value: dado.codigo + ' - ' + dado.descricao,
+						codigo: dado.codigo,
+						descricao: dado.descricao,
+						unMedida: dado.unMedida,
+						dados: dado
+					});
+				}
+			});
+		}
+	}
+
+	return dados;
+}
+
+/**
  * Esconde o último elemento hr do pai filho.
  *
  * @param {String} id Id da tag hr no pai filho com underscore sem a posição. Exemplo: 'item___'.
@@ -263,6 +342,27 @@ const esconderUltimaHr = (id) => {
 		$(this).show();
 	});
 	$('[id^=' + id + ']:last').hide();
+}
+
+/**
+ * Retorna a data atual no formato informado.
+ *
+ * @param {String} formato String com o formato de retorno da data, podendo ser:
+ *  - 'yyyy-mm-dd' (formato padrão)
+ *  - 'dd/mm/yyyy'
+ */
+const getDataAtual = (formato = 'yyyy-mm-dd') => {
+	const hoje = new Date();
+	const ano = hoje.getFullYear();
+	const mes = (hoje.getMonth() + 1) < 10 ? '0' + (hoje.getMonth() + 1) : (hoje.getMonth() + 1);
+	const dia = hoje.getDate() < 10 ? '0' + hoje.getDate() : hoje.getDate();
+
+	if (formato == 'yyyy-mm-dd')
+		return `${ano}-${mes}-${dia}`;
+	else if (formato == 'dd/mm/yyyy')
+		return `${dia}/${mes}/${ano}`;
+	else
+		return null;
 }
 
 /**
@@ -277,7 +377,15 @@ const instanciarAutocomplete = (id) => {
 		elemento.autocomplete({
 			minlength: 0,
 			source: (req, res) => {
-				res(buscarDados(id, req.term == ' ' ? '' : req.term));
+				let dados = null;
+
+				if (navigator.onLine) {
+					dados = buscarDados(id, req.term == ' ' ? '' : req.term);
+				} else {
+					dados = buscarDadosOffline(id, req.term == ' ' ? '' : req.term);
+				}
+
+				res(dados);
 			},
 			select: (evento, dado) => {
 				elemento.val(dado.item.descricao);
@@ -286,7 +394,7 @@ const instanciarAutocomplete = (id) => {
 
 				if (id.indexOf('item') == 0) {
 					const posicao = id.split('___')[1];
-					$('#unMedida___' + posicao).val(dado.item.dados.unMedida);
+					$('#unMedida___' + posicao).val(dado.item.unMedida);
 				} else if (id == 'filial') {
 					$('#centroCusto').val('');
 				}
@@ -331,7 +439,7 @@ const instanciarAutocomplete = (id) => {
  * @param {string} bool true: apresenta erro, false: remove erro.
  * @param {string} text texto apresentado na tag <p>
  */
-function mostrarLabelErro(elemento, bool, text, tipo = 'class') {
+const mostrarLabelErro = (elemento, bool, text, tipo = 'class') => {
 	if (tipo == 'class') {
 		if (bool) {
 			$(`.help-block-${elemento}`).text(text)
