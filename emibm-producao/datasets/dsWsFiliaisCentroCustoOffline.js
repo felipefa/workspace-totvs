@@ -6,8 +6,8 @@ function defineStructure() {
 	addColumn('codigoCC');
 	addColumn('descricaoCC');
 
-	setKey(['codigoFilial']);
-	addIndex(['codigoFilial']);
+	setKey(['codigoFilial', 'codigoCC']);
+	addIndex(['codigoFilial', 'codigoCC']);
 }
 
 function createDataset(fields, constraints, sortFields) {}
