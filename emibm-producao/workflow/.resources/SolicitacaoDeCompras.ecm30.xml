@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Solicitação de Compras</processId>
-      <version>4</version>
+      <version>5</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>35</formId>
@@ -74,13 +74,13 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
-      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <notifyRequisitionerFollowUp>true</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>150</positionX>
       <positionY>66</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
-      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerFollowUp>true</notifyManagerFollowUp>
       <notifyManagerDelay>false</notifyManagerDelay>
       <allowanceManagerTime>0</allowanceManagerTime>
       <frequenceManagerTime>0</frequenceManagerTime>
@@ -125,13 +125,13 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
-      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <notifyRequisitionerFollowUp>true</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>260</positionX>
       <positionY>191</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
-      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerFollowUp>true</notifyManagerFollowUp>
       <notifyManagerDelay>false</notifyManagerDelay>
       <allowanceManagerTime>0</allowanceManagerTime>
       <frequenceManagerTime>0</frequenceManagerTime>
@@ -207,7 +207,7 @@
       <positionY>30</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
-      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerFollowUp>true</notifyManagerFollowUp>
       <notifyManagerDelay>false</notifyManagerDelay>
       <allowanceManagerTime>0</allowanceManagerTime>
       <frequenceManagerTime>0</frequenceManagerTime>
@@ -254,7 +254,7 @@
       <positionY>100</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
-      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerFollowUp>true</notifyManagerFollowUp>
       <notifyManagerDelay>false</notifyManagerDelay>
       <allowanceManagerTime>0</allowanceManagerTime>
       <frequenceManagerTime>0</frequenceManagerTime>
@@ -275,7 +275,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>1</expressionOrder>
-        <version>4</version>
+        <version>5</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Aprovado&quot;</condition>
@@ -287,7 +287,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>2</expressionOrder>
-        <version>4</version>
+        <version>5</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
@@ -299,7 +299,7 @@
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
         <expressionOrder>3</expressionOrder>
-        <version>4</version>
+        <version>5</version>
         <sequence>9</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Ajustar&quot;</condition>
@@ -456,7 +456,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
-        <version>4</version>
+        <version>5</version>
         <linkSequence>6</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -467,7 +467,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>SolicitacaoDeCompras</processId>
-        <version>4</version>
+        <version>5</version>
         <linkSequence>10</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
