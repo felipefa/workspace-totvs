@@ -152,7 +152,7 @@ $(() => {
 	}
 
 	// ATIVIDADES 'LANÇAR E FINALIZAR' OU 'CANCELAR E FINALIZAR'
-	if (ATIVIDADE == 9 || ATIVIDADE == 11) {
+	if (ATIVIDADE == 11 || ATIVIDADE == 13) {
 		if (FORM_MODE == 'VIEW') {
 			const dtAprov = document.getElementById('dtAprov').innerHTML;
 			const dtNecessidade = document.getElementById('dtNecessidade').innerHTML;
@@ -246,6 +246,7 @@ const buscarDados = (id, filtro) => {
 					value: dado.codigo + ' - ' + dado.descricao,
 					codigo: dado.codigo,
 					descricao: dado.descricao,
+					unMedida: dado.unMedida,
 					dados: dado
 				});
 			}
