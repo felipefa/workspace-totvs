@@ -11,6 +11,15 @@ var beforeSendValidate = function (numState, nextState) {
 		if (!isEmpty(motivo) &&
 			!isEmpty(descricao) &&
 			!isEmpty(unMedida)) {
+			if (descricao.length > 30) {
+				FLUIGC.toast({
+					title: 'Atenção!',
+					message: 'A descrição do produto deve ter no máximo 30 caracteres.',
+					type: 'warning'
+				});
+
+				return false;
+			}
 			return true;
 		}
 
