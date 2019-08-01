@@ -45,18 +45,20 @@ function createDataset(fields, constraints, sortFields) {
 
 		if (retornoProtheus != null) {
 			var usuarios = retornoProtheus.resources;
-			var usuarioEncontrado = false;
 
 			for (var indexUsuarios = 0; indexUsuarios < usuarios.length; indexUsuarios++) {
 				var emails = usuarios[indexUsuarios].emails;
 				var id = usuarios[indexUsuarios].id;
 				var nome = usuarios[indexUsuarios].displayName;
 
+				// log.warn('----- Debug dsWsConsultaUsuario ----- idProtheus: ' + id)
+				// log.warn('----- Debug dsWsConsultaUsuario ----- Nome: ' + nome)
+				// log.warn('----- Debug dsWsConsultaUsuario ----- email: ' + email)
+
 				for (var indexEmails = 0; indexEmails < emails.length; indexEmails++) {
 					var email = emails[indexEmails].value;
 
-					if ((constraintEmail == '' || (constraintEmail != '' && email == constraintEmail + '')) && !usuarioEncontrado) {
-						usuarioEncontrado = true;
+					if ((constraintEmail == '' || (constraintEmail != '' && email == constraintEmail + ''))) {
 
 						retornoProtheus = JSON.parse(consultarProtheus('userxcc', id));
 
@@ -67,6 +69,8 @@ function createDataset(fields, constraints, sortFields) {
 
 							if (centrosCusto) {
 								for (var indexCC = 0; indexCC < centrosCusto.length; indexCC++) {
+									// log.warn('----- Debug dsWsConsultaUsuario ----- centro de custo: ' + centrosCusto[indexCC].CODIGO)
+									// log.warn('----- Debug dsWsConsultaUsuario ----- filial: ' + centrosCusto[indexCC].FILIAL)
 									codigosCC.push(centrosCusto[indexCC].CODIGO);
 									codigosFiliais.push(centrosCusto[indexCC].FILIAL);
 								}
@@ -80,14 +84,8 @@ function createDataset(fields, constraints, sortFields) {
 							mensagem = 'Nenhum dado encontrado na consulta de centros de custos do usuário ' + id + ' - ' + nome + ' no Protheus';
 							dsWsConsultaUsuario.addRow(['', '', '', sucesso, mensagem, '', '']);
 						}
-					} else
-						usuarioEncontrado = false;
+					}
 				}
-			}
-
-			if (!usuarioEncontrado && constraintEmail != '') {
-				mensagem = 'Nenhum usuário com o email ' + constraintEmail + ' foi encontrado';
-				dsWsConsultaUsuario.addRow(['', '', '', sucesso, mensagem, '', '']);
 			}
 		} else {
 			mensagem = 'Nenhum dado encontrado na consulta de usuários do Protheus';
