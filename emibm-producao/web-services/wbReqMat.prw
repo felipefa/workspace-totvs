@@ -14,7 +14,7 @@ Return
 WSRESTFUL USERXCC DESCRIPTION "Servico REST para User X Centro de Custos"
 	WSDATA ID As String
 
-	WSMETHOD GET DESCRIPTION "Retorna os centos de custos pertencentes ao usuário" WSSYNTAX "/USERXCC&{ID}"
+	WSMETHOD GET DESCRIPTION "Retorna os centos de custos pertencentes ao usuario" WSSYNTAX "/USERXCC&{ID}"
 END WSRESTFUL
 
 
@@ -1107,7 +1107,7 @@ Return
 //Fim dos Metodos Utilizados Pelas Classes
 
 /* ------------------------------------------------------------------------------------------- */
-/* ------------------------------- Solicitação ao Armazem ------------------------------------ */
+/* ------------------------------- Solicitacao ao Armazem ------------------------------------ */
 /* ------------------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Solicitaco ao Armazem
 WSRESTFUL SOLARMA DESCRIPTION "Servico REST para cadastro de Solicitacao Ao Armazem"
@@ -1178,7 +1178,7 @@ Return(lRet)
 //Fim do Metodo POST do Web Service de Solicitacao ao Armazem
 
 /* ------------------------------------------------------------------------------------------- */
-/* ------------------------------- Solicitação de Compras ------------------------------------ */
+/* ------------------------------- Solicitacao de Compras ------------------------------------ */
 /* ------------------------------------------------------------------------------------------- */
 //Inicio da Declaracao do Web Service Solicitaco de Compra
 WSRESTFUL SOLCOMP DESCRIPTION "Servico REST para cadastro de Solicitacao de Compra"
@@ -1192,6 +1192,7 @@ END WSRESTFUL
 WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 	Local cJSON := Self:GetContent() // Pega a string do JSON
 	Local aArea := GetArea()
+	Local cFilBkp := Nil
 	Local oParseJSON := Nil
 	Local cJsonRet := ""
 	Local cArqLog := ""
@@ -1200,7 +1201,7 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 	Local cCodResp := ""
 	Local lRet := .T.
 	Local aCab := {} //--> Array de cabecalho para ExecAuto do MATA0110
-	local aItens := {} //--> Array auxiliar de itens da solicitação
+	local aItens := {} //--> Array auxiliar de itens da solicitacao
 	local aAllItens := {} //--> Array de itens para ExecAuto do MATA0110
 	Private lMsErroAuto := .F.
 
@@ -1211,6 +1212,9 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 
 	::SetContentType("application/json")
 	FWJsonDeserialize(cJson, @oParseJSON)
+
+	cFilBkp := cFilAnt
+	cFilAnt := PadR(Alltrim(oParseJSON:OBJETO:FIL), TamSX3("C1_FILIAL")[1])
 
 	//Dado da solicitacao
 	Aadd(aCab, {"C1_EMISSAO", dDataBase})
@@ -1241,13 +1245,13 @@ WSMETHOD POST WSRECEIVE OBJETO WSSERVICE SOLCOMP
 		ConfirmSX8()
 		cJSONRet := '{"cod": "200"';
 				   + ', "sucesso":"TRUE"';
-				   + ', "msg":"' + EncodeUTF8("Solicitação cadastrada com sucesso!", "cp1252") + '"';
+				   + ', "msg":"' + EncodeUTF8("Solicitacao cadastrada com sucesso!", "cp1252") + '"';
 				   + ', "solicitacao":"' + SC1->C1_NUM + '"';
 				   + '}'
 
 		::SetResponse(cJSONRet)
 	EndIf
-
+	cFilAnt := cFilBkp
 	RestArea(aArea)
 Return(lRet)
 //Fim do Metodo POST do Web Service de Solicitacao de Compra
