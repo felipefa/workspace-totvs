@@ -8,28 +8,37 @@ var beforeSendValidate = function (numState, nextState) {
 		const descricao = document.getElementById('descricao').value;
 		const unMedida = document.getElementById('codUnMedida').value;
 
-		if (!isEmpty(motivo) &&
-			!isEmpty(descricao) &&
-			!isEmpty(unMedida)) {
-			if (descricao.length > 30) {
-				FLUIGC.toast({
-					title: 'Atenção!',
-					message: 'A descrição do produto deve ter no máximo 30 caracteres.',
-					type: 'warning'
-				});
+		let problem = [];
+		
+		// Valida Motivo
+		if (isEmpty(motivo)) {
+			mostrarLabelErro('motivo', true, 'É necessário informar um motivo.');
+			problem.push(true);
+		} else mostrarLabelErro('motivo', false, '');
 
-				return false;
-			}
-			return true;
+		// Valida Descrição
+		if (isEmpty(descricao)) {
+			mostrarLabelErro('descricao', true, 'É necessário informar uma descrição.');
+			problem.push(true);
+		} else mostrarLabelErro('descricao', false, '');
+
+		// Valida Unidade de Medida
+		if (isEmpty(unMedida)) {
+			mostrarLabelErro('unMedida', true, 'Uma opção deve ser selecionada.');
+			problem.push(true);
+			document.getElementById('unMedida').value = '';
+		} else mostrarLabelErro('unMedida', false, '');
+
+		if (problem.includes(true)) {
+			FLUIGC.toast({
+				title: 'Atenção!',
+				message: 'Preencha todos os campos indicados.',
+				type: 'warning'
+			});
+			return false
 		}
 
-		FLUIGC.toast({
-			title: 'Atenção!',
-			message: 'Preencha todos os campos.',
-			type: 'warning'
-		});
-
-		return false;
+		return true;
 	}
 
 	// ATIVIDADE 'APROVAR CADASTRO'
