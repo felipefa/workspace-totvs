@@ -3,6 +3,7 @@ var DSWSUSUARIOSPROTHEUS = null;
 var DSWSPRODUTOOFFLINE = null;
 var DSWSFILIAISCENTROCUSTOOFFLINE = null;
 var FILIAIS = [];
+var LOADING = FLUIGC.loading(window);
 
 $(() => {
 	// ATIVIDADE 'INÍCIO'
@@ -520,25 +521,30 @@ const verificarItem = (elemento) => {
 		$('#unMedida___' + posicao).val('');
 		mostrarLabelErro(elemento.id, true, 'Um produto deve ser selecionado.', 'id');
 	} else {
-		const codigo = $('#codItem___' + posicao);
-		const elemCodigos = document.querySelectorAll('[id^="codItem___"]');
-		let encontrou = false;
+		/**
+		 * // Código para validar se o item selecionado é repetido
+		 *
+		 * const codigo = $('#codItem___' + posicao);
+		 * const elemCodigos = document.querySelectorAll('[id^="codItem___"]');
+		 * let encontrou = false;
 
-		elemCodigos.forEach(elemCodigo => {
-			const posicaoCodigo = elemCodigo.id.split('___')[1];
+		 * elemCodigos.forEach(elemCodigo => {
+		 * 	const posicaoCodigo = elemCodigo.id.split('___')[1];
 
-			if (elemCodigo.value === codigo.val() && posicao !== posicaoCodigo)
-				encontrou = true;
-		});
+		 * 	if (elemCodigo.value === codigo.val() && posicao !== posicaoCodigo)
+		 * 		encontrou = true;
+		 * });
 
-		if (encontrou) {
-			const item = document.getElementById('item___' + posicao);
-			mostrarLabelErro(elemento.id, true, item.value + ' já está na lista.', 'id');
-			codigo.val('');
-			item.value = '';
-			document.getElementById('unMedida___' + posicao).value = '';
-		} else
-			mostrarLabelErro(elemento.id, false, '', 'id');
+		 * if (encontrou) {
+		 * 	const item = document.getElementById('item___' + posicao);
+		 * 	mostrarLabelErro(elemento.id, true, item.value + ' já está na lista.', 'id');
+		 * 	codigo.val('');
+		 * 	item.value = '';
+		 * 	document.getElementById('unMedida___' + posicao).value = '';
+		 * } else
+		 *	mostrarLabelErro(elemento.id, false, '', 'id');
+		 */
+		mostrarLabelErro(elemento.id, false, '', 'id');
 	}
 }
 
