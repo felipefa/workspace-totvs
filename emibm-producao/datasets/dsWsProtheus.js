@@ -184,7 +184,7 @@ function createDataset(fields, constraints, sortFields) {
 								dataset.addRow(['', '', '', constraintTipoRequisicao, true, 'Não foi possível cadastrar o produto, pois nenhum dado foi informado']);
 							else {
 								if (dados.cod == 200)
-									dataset.addRow(['', dados.desc, '', constraintTipoRequisicao, false, dados.msg]);
+									dataset.addRow(['', '', '', constraintTipoRequisicao, false, dados.msg]);
 								else if (dados.errorCode == 400)
 									dataset.addRow(['', '', '', constraintTipoRequisicao, true, dados.errorMessage]);
 								else
