@@ -1,5 +1,5 @@
 var beforeSendValidate = function (numState, nextState) {
-	const loading = FLUIGC.loading(window);
+	LOADING.show();
 
 	// ATIVIDADE 'INÍCIO'
 	if (numState == 0 || numState == 4) {
@@ -11,6 +11,8 @@ var beforeSendValidate = function (numState, nextState) {
 				message: 'Informe pelo menos um item.',
 				type: 'warning'
 			});
+
+			LOADING.hide();
 
 			return false;
 		}
@@ -30,8 +32,12 @@ var beforeSendValidate = function (numState, nextState) {
 				type: 'warning'
 			});
 
+			LOADING.hide();
+
 			return false;
 		}
+
+		LOADING.hide();
 
 		return true;
 	}
@@ -39,8 +45,6 @@ var beforeSendValidate = function (numState, nextState) {
 	// ATIVIDADE 'APROVAR SOLICITAÇÃO'
 	if (numState == 5) {
 		const decisao = document.getElementById('decisao').value;
-
-		loading.show();
 
 		if (decisao == 'Aprovado') {
 			const dtNecessidade = document.getElementById('dtNecessidade').value;
@@ -97,7 +101,7 @@ var beforeSendValidate = function (numState, nextState) {
 
 					document.getElementById('solicitacaoProtheus').value = dsWsProtheus.values[0].solicitacao;
 
-					loading.hide();
+					LOADING.hide();
 
 					return true;
 				} else if (dsWsProtheus != null) {
@@ -110,7 +114,7 @@ var beforeSendValidate = function (numState, nextState) {
 					type: 'warning'
 				});
 
-				loading.hide();
+				LOADING.hide();
 
 				return false;
 			}
@@ -124,12 +128,12 @@ var beforeSendValidate = function (numState, nextState) {
 					type: 'warning'
 				});
 
-				loading.hide();
+				LOADING.hide();
 
 				return false;
 			}
 
-			loading.hide();
+			LOADING.hide();
 
 			return true;
 		}
@@ -140,7 +144,7 @@ var beforeSendValidate = function (numState, nextState) {
 			type: 'warning'
 		});
 
-		loading.hide();
+		LOADING.hide();
 
 		return false;
 	}
