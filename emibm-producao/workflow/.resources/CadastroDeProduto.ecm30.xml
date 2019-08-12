@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Cadastro de Produto</processId>
-      <version>3</version>
+      <version>6</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>5</formId>
@@ -135,7 +135,7 @@
       <notifyManagerDelay>false</notifyManagerDelay>
       <allowanceManagerTime>0</allowanceManagerTime>
       <frequenceManagerTime>0</frequenceManagerTime>
-      <inhibitTransfer>false</inhibitTransfer>
+      <inhibitTransfer>true</inhibitTransfer>
       <periodId></periodId>
       <stateType>0</stateType>
       <bpmnType>80</bpmnType>
@@ -156,8 +156,8 @@
         <version>1</version>
         <sequence>7</sequence>
       </processStatePK>
-      <stateName>Aprovado?</stateName>
-      <stateDescription>Aprovado?</stateDescription>
+      <stateName>Confirmar decisão do formulário?</stateName>
+      <stateDescription>Confirmar decisão do formulário?</stateDescription>
       <joint>false</joint>
       <initialState>false</initialState>
       <transferAttachments>false</transferAttachments>
@@ -181,8 +181,8 @@
         <version>1</version>
         <sequence>9</sequence>
       </processStatePK>
-      <stateName>Cadastrar e finalizar</stateName>
-      <stateDescription>Cadastrar e finalizar</stateDescription>
+      <stateName>Aprovado e cadastrado no Protheus</stateName>
+      <stateDescription>Aprovado e cadastrado no Protheus</stateDescription>
       <instruction>Atividade final do processo</instruction>
       <deadlineTime>0</deadlineTime>
       <joint>false</joint>
@@ -228,8 +228,8 @@
         <version>1</version>
         <sequence>11</sequence>
       </processStatePK>
-      <stateName>Cancelar e finalizar</stateName>
-      <stateDescription>Cancelar e finalizar</stateDescription>
+      <stateName>Reprovado</stateName>
+      <stateDescription>Reprovado</stateDescription>
       <instruction>Atividade final do processo</instruction>
       <deadlineTime>0</deadlineTime>
       <joint>false</joint>
@@ -275,7 +275,7 @@
         <companyId>1</companyId>
         <processId>CadastroDeProduto</processId>
         <expressionOrder>1</expressionOrder>
-        <version>3</version>
+        <version>6</version>
         <sequence>7</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Aprovado&quot;</condition>
@@ -287,7 +287,7 @@
         <companyId>1</companyId>
         <processId>CadastroDeProduto</processId>
         <expressionOrder>2</expressionOrder>
-        <version>3</version>
+        <version>6</version>
         <sequence>7</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Reprovado&quot;</condition>
@@ -299,7 +299,7 @@
         <companyId>1</companyId>
         <processId>CadastroDeProduto</processId>
         <expressionOrder>3</expressionOrder>
-        <version>3</version>
+        <version>6</version>
         <sequence>7</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&quot;decisao&quot;) == &quot;Ajustar&quot;</condition>
@@ -449,14 +449,60 @@
       </swimLanePK>
     </SwimLane>
   </list>
-  <list/>
-  <list/>
+  <list>
+    <ProcessComponGraf>
+      <componType>1</componType>
+      <positionX>730</positionX>
+      <positionY>9</positionY>
+      <processComponGrafPK>
+        <companyId>1</companyId>
+        <processId>CadastroDeProduto</processId>
+        <version>1</version>
+        <componGrafSequence>14</componGrafSequence>
+      </processComponGrafPK>
+      <stateName>Aprovado e cadastrado no Protheus</stateName>
+    </ProcessComponGraf>
+    <ProcessComponGraf>
+      <componType>1</componType>
+      <positionX>730</positionX>
+      <positionY>90</positionY>
+      <processComponGrafPK>
+        <companyId>1</companyId>
+        <processId>CadastroDeProduto</processId>
+        <version>1</version>
+        <componGrafSequence>16</componGrafSequence>
+      </processComponGrafPK>
+      <stateName>Reprovado</stateName>
+    </ProcessComponGraf>
+  </list>
+  <list>
+    <ProcessLinkAssoc>
+      <processLinkAssocPK>
+        <companyId>1</companyId>
+        <processId>CadastroDeProduto</processId>
+        <version>1</version>
+        <linkSequence>15</linkSequence>
+      </processLinkAssocPK>
+      <initialStateSequence>14</initialStateSequence>
+      <finalStateSequence>9</finalStateSequence>
+    </ProcessLinkAssoc>
+    <ProcessLinkAssoc>
+      <processLinkAssocPK>
+        <companyId>1</companyId>
+        <processId>CadastroDeProduto</processId>
+        <version>1</version>
+        <linkSequence>17</linkSequence>
+      </processLinkAssocPK>
+      <initialStateSequence>16</initialStateSequence>
+      <finalStateSequence>11</finalStateSequence>
+    </ProcessLinkAssoc>
+  </list>
   <list>
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>CadastroDeProduto</processId>
-        <version>3</version>
+        <version>6</version>
         <linkSequence>6</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -467,7 +513,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>CadastroDeProduto</processId>
-        <version>3</version>
+        <version>6</version>
         <linkSequence>8</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
